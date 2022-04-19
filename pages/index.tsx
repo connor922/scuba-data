@@ -14,15 +14,14 @@ const Home: NextPage = () => {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">ScubaData!</a>
+          Welcome to ScubaData!
         </h1>        
-      </main>
-
-      <footer className={styles.footer}>
+        <h2>
         <Link href="/dashboard">
           <a>Go to Dashboard</a>
         </Link>
-        </footer>
+        </h2>
+      </main>
     </div>
   )
 }

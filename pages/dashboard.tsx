@@ -34,6 +34,9 @@ const Home: NextPage = () => {
        <Link href="/">
           Go to the HomePage
       </Link>
+      <Link href="/settings">
+          Go to Settings
+      </Link>
       </main>
       
     </div>

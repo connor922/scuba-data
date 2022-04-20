@@ -25,9 +25,9 @@ import Modal from '../components/Modal/Modal'
 
 const drawerWidth = 240;
 
-const AppBar = styled(MuiAppBar, {
+const AppBar:any = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme, open }) => ({
+})(({ theme, open }:any) => ({
   zIndex: theme.zIndex.drawer + 1,
   transition: theme.transitions.create(['width', 'margin'], {
     easing: theme.transitions.easing.sharp,

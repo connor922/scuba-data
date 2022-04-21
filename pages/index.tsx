@@ -35,20 +35,22 @@ export default function SignInSide() {
           sm={4}
           md={7}
           sx={{
-            backgroundImage: 'url(/scuba.jpg)',
+            backgroundImage: 'url(/scuba.webp)',
             backgroundRepeat: 'no-repeat',
             backgroundColor: (t) =>
               t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            opacity: '0.6'
+            verticalAlign: 'middle',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center'
           }}
         >
           <Typography component="h2"
               variant="h2"
               color="inherit"
-              
-              sx={{ color: 'black' , opacity:1}}>
+              sx={{ color: 'white' , opacity:1}}>
             Welcome to ScubaData
           </Typography>
         </Grid>
@@ -93,15 +95,17 @@ export default function SignInSide() {
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember me"
               />
+               <Link href="/dashboard" sx={{ color: '#FFFFFF', textDecoration:"none" }} >
                 <Button
                   fullWidth
                   variant="contained"
                   sx={{ mt: 3, mb: 2 }}
                 >
-                  <Link href="/dashboard" sx={{ color: '#FFFFFF' }} >
+                 
                       Sign In
-                  </Link>
                 </Button>
+                </Link>
+
             </Box>
           </Box>
         </Grid>

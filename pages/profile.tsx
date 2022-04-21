@@ -19,10 +19,11 @@ import ListItemText from '@mui/material/ListItemText'
 import Paper from '@mui/material/Paper'
 import { createTheme, styled, ThemeProvider } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
-import Typography from '@mui/material/Typography'
-import { Fragment, useState } from 'react';
+import { Fragment, useState } from 'react'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import Modal from '../components/Modal/Modal'
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Typography from '@mui/material/Typography';
 
 const drawerWidth = 240;
 
@@ -86,9 +87,11 @@ export const secondaryListItems = (
       <Link href="/settings" >
               <SettingsApplicationsIcon />
               </Link>
+              
       </ListItemIcon>
       <ListItemText primary="Settings" />
-    </ListItemButton>    <ListItemButton>
+    </ListItemButton>
+    <ListItemButton>
       <ListItemIcon>
       <Link href="/profile" >
               <AccountCircleIcon />
@@ -104,15 +107,14 @@ const mdTheme = createTheme();
 
 function DashboardContent() {
   const [open, setOpen] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const handleClickOpen = () => {
-    setIsOpen(true);
-  };
-  const handleClose = () => {
-    setIsOpen(false);
-  };
+  const [expanded, setExpanded] = useState("");
+
   const toggleDrawer = () => {
     setOpen(!open);
+  };
+  
+  const handleChange = (panel:any) => (event:any, isExpanded:any) => {
+    setExpanded(isExpanded ? panel : false);
   };
 
   return (
@@ -162,7 +164,7 @@ function DashboardContent() {
               px: [1],
             }}
           >
-            Dashboard
+            Profile
             <IconButton onClick={toggleDrawer}>
             <ChevronLeftIcon />
             </IconButton>
@@ -187,11 +189,6 @@ function DashboardContent() {
         >
           <Toolbar />
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-          <Button variant="outlined" onClick={handleClickOpen}>
-                      Upload
-                    </Button>
-                    <Modal isOpen={isOpen} handleClose={handleClose} />
-             
                 <Paper
                   sx={{
                     p: 2,
@@ -202,8 +199,7 @@ function DashboardContent() {
                     marginTop:2
                   }}
                 >
-                    
-       
+                  Profile
                 </Paper>
               
           </Container>

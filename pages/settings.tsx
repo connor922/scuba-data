@@ -24,6 +24,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const drawerWidth = 240;
 
@@ -90,6 +91,15 @@ export const secondaryListItems = (
       </ListItemIcon>
       <ListItemText primary="Settings" />
     </ListItemButton>
+    <ListItemButton>
+      <ListItemIcon>
+      <Link href="/profile" >
+              <AccountCircleIcon />
+              </Link>
+              
+      </ListItemIcon>
+      <ListItemText primary="Profile" />
+    </ListItemButton>
   </Fragment>
 );
 
@@ -102,7 +112,7 @@ function DashboardContent() {
   const toggleDrawer = () => {
     setOpen(!open);
   };
-  
+
   const handleChange = (panel:any) => (event:any, isExpanded:any) => {
     setExpanded(isExpanded ? panel : false);
   };
@@ -154,7 +164,7 @@ function DashboardContent() {
               px: [1],
             }}
           >
-            Dashboard
+            Settings
             <IconButton onClick={toggleDrawer}>
             <ChevronLeftIcon />
             </IconButton>

@@ -110,19 +110,23 @@ function DashboardContent() {
     const cards: any = [
         {
             name: 'File 1',
-            description: '24 rows',
+            errorCount: '24 errors',
+            rowCount: '223 rows',
         },
         {
             name: 'File 2',
-            description: '36 rows',
+            errorCount: '36 errors',
+            rowCount: '200 rows',
         },
         {
             name: 'File 3',
-            description: '4 rows',
+            errorCount: '4 errors',
+            rowCount: '24 rows',
         },
         {
             name: 'File 4',
-            description: '10 rows',
+            errorCount: '10 errors',
+            rowCount: '23 rows',
         },
     ]
     const handleClickOpen = () => {
@@ -226,26 +230,38 @@ function DashboardContent() {
                                 marginTop: 2,
                             }}
                         >
-                            {cards.map((cards:any, index:any) => {
-                                const { image, name, description } = cards
+                            {cards.map((cards: any, index: any) => {
+                                const { errorCount, name, rowCount } = cards
                                 return (
                                     <Card key={index} sx={{ mb: '2rem' }}>
-                                        <CardContent sx={{ display: 'flex', gap:"1rem" }}>
+                                        <CardContent
+                                            sx={{
+                                                display: 'flex',
+                                                gap: '1rem',
+                                                justifyContent: 'space-between',
+                                            }}
+                                        >
                                             <Typography
                                                 variant={'h6'}
                                                 gutterBottom
                                             >
                                                 {name}
                                             </Typography>
+                                            <Typography variant={'h6'}>
+                                                {rowCount}
+                                            </Typography>
                                             <Typography
                                                 variant={'h6'}
+                                                sx={{ color: 'red' }}
                                             >
-                                                {description}
+                                                {errorCount}
                                             </Typography>
-                                            <Button variant="outlined" onClick={handleClickOpen} sx={{color:'blue'}}>
+                                            <Button
+                                                variant="outlined"
+                                                sx={{ color: 'blue' }}
+                                            >
                                                 Export
                                             </Button>
-                                            <Divider light />
                                         </CardContent>
                                     </Card>
                                 )

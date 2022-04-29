@@ -1,17 +1,14 @@
-import Button from '@mui/material/Button'
-import Stepper from '../Stepper/Stepper'
 import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
+import Stepper from '../Stepper/Stepper'
 
-export default function FormDialog({ isOpen, handleClose }: any) {
+export default function FormDialog({ isOpen, handleClose, processfile }: any) {
     return (
         <Dialog open={isOpen} onClose={handleClose}>
             <DialogTitle>Upload</DialogTitle>
             <DialogContent>
-                <Stepper />
+                <Stepper onClose={processfile} />
             </DialogContent>
         </Dialog>
     )

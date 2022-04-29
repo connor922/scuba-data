@@ -24,9 +24,23 @@ import { createTheme, styled, ThemeProvider } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { Fragment, useState } from 'react'
+import { usePapaParse } from 'react-papaparse'
 import Modal from '../components/Modal/Modal'
 
 const drawerWidth = 240
+
+
+
+const config = {
+	quotes: false, //or array of booleans
+	quoteChar: '"',
+	escapeChar: '"',
+	delimiter: ",",
+	header: true,
+	newline: "\r\n",
+	skipEmptyLines: false, //other option is 'greedy', meaning skip delimiters, quotes, and whitespace.
+	columns: null //or array of strings
+};
 
 const AppBar: any = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
@@ -103,32 +117,27 @@ export const secondaryListItems = (
 
 const mdTheme = createTheme()
 
+
+const cardsT: any = [
+  {
+      name: 'example',
+      errorCount: '24 errors',
+      rowCount: '223 rows',
+      file:`Column 1,Column 2,Column 3,Column 4
+      1-1,1-2,1-3,1-4
+      2-1,2-2,2-3,2-4
+      3-1,3-2,3-3,3-4
+      4,5,6,7`
+  },
+]
+
 function DashboardContent() {
     const [open, setOpen] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
+  const [cards, setCards ] = useState(cardsT)
+    const { jsonToCSV } = usePapaParse();
 
-    const cards: any = [
-        {
-            name: 'File 1',
-            errorCount: '24 errors',
-            rowCount: '223 rows',
-        },
-        {
-            name: 'File 2',
-            errorCount: '36 errors',
-            rowCount: '200 rows',
-        },
-        {
-            name: 'File 3',
-            errorCount: '4 errors',
-            rowCount: '24 rows',
-        },
-        {
-            name: 'File 4',
-            errorCount: '10 errors',
-            rowCount: '23 rows',
-        },
-    ]
+    
     const handleClickOpen = () => {
         setIsOpen(true)
     }
@@ -218,7 +227,34 @@ function DashboardContent() {
                         <Button variant="outlined" onClick={handleClickOpen}>
                             Upload
                         </Button>
-                        <Modal isOpen={isOpen} handleClose={handleClose} />
+                        <Modal isOpen={isOpen} handleClose={handleClose} processfile={(data:any)=>{
+
+
+                          const a = data.map((array:any )=>{
+
+                            const b:any = {};
+
+                            array.forEach((element:any, index: any)  => {
+                              b[`column ${index}`] = element.split("").reverse().join("");
+                            });
+
+                            return b;
+                          })
+
+                          const file = jsonToCSV(a);
+                          
+
+                          handleClose()
+
+                          setCards((prevState:any)=>{
+                            return [{
+                              name: data[0][0],
+                              errorCount: `${data.length}errors`,
+                              rowCount: `${data.length}errors`,
+                              file: file
+                            }, ...prevState]})
+
+                          }} />
 
                         <Paper
                             sx={{
@@ -231,7 +267,7 @@ function DashboardContent() {
                             }}
                         >
                             {cards.map((cards: any, index: any) => {
-                                const { errorCount, name, rowCount } = cards
+                                const { errorCount, name, rowCount, file } = cards
                                 return (
                                     <Card key={index} sx={{ mb: '2rem' }}>
                                         <CardContent
@@ -259,6 +295,15 @@ function DashboardContent() {
                                             <Button
                                                 variant="outlined"
                                                 sx={{ color: 'blue' }}
+                                                onClick={() => {
+                                                    var csvData = new Blob([file], {type: 'text/csv;charset=utf-8;'});
+                                                    var csvURL = window.URL.createObjectURL(csvData);
+                                                
+                                                    var tempLink = document.createElement('a');
+                                                    tempLink.href = csvURL;
+                                                    tempLink.setAttribute('download', 'download.csv');
+                                                    tempLink.click();
+                                                }}
                                             >
                                                 Export
                                             </Button>

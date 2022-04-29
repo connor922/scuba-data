@@ -7,10 +7,11 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import { useCSVReader } from 'react-papaparse'
 
-const steps = ['Select campaign settings', 'Create an ad group', 'Create an ad']
+const steps = ['Upload file']
 
-export default function HorizontalLinearStepper() {
-    const [activeStep, setActiveStep] = React.useState(0)
+export default function HorizontalLinearStepper({onClose}:any) {
+    const [activeStep, setActiveStep] = React.useState(0);
+    const [state, setState] = React.useState([])
     const [skipped, setSkipped] = React.useState(new Set<number>())
     const { CSVReader } = useCSVReader()
 
@@ -52,10 +53,6 @@ export default function HorizontalLinearStepper() {
         })
     }
 
-    const handleReset = () => {
-        setActiveStep(0)
-    }
-
     return (
         <Box sx={{ width: '100%' }}>
             <Stepper activeStep={activeStep}>
@@ -86,7 +83,7 @@ export default function HorizontalLinearStepper() {
                     </Typography>
                     <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                         <Box sx={{ flex: '1 1 auto' }} />
-                        <Button onClick={handleReset}>Reset</Button>
+                        <Button onClick={()=>onClose(state)}>Calculate</Button>
                     </Box>
                 </React.Fragment>
             ) : (
@@ -96,9 +93,7 @@ export default function HorizontalLinearStepper() {
                         <Stepper />{' '}
                         <CSVReader
                             onUploadAccepted={(results: any) => {
-                                console.log('---------------------------')
-                                console.log(results)
-                                console.log('---------------------------')
+                                setState(results.data);
                             }}
                         >
                             {({
@@ -108,7 +103,7 @@ export default function HorizontalLinearStepper() {
                                 getRemoveFileProps,
                             }: any) => (
                                 <>
-                                    <div>
+                                    <div style={{display:"flex"}}>
                                         <button
                                             type="button"
                                             {...getRootProps()}

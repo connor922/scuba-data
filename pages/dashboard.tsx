@@ -4,6 +4,9 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import MenuIcon from '@mui/icons-material/Menu'
+import Avatar from '@mui/material/Avatar'
+
+
 import ScubaDivingIcon from '@mui/icons-material/ScubaDiving'
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications'
 import MuiAppBar from '@mui/material/AppBar'
@@ -292,6 +295,11 @@ function DashboardContent() {
                                             >
                                                 {errorCount}
                                             </Typography>
+                                            <div style={{display:"flex", gap:"5px"}}>
+                                            <Avatar sx={{ bgcolor: "green",fontSize:"1rem" }}>20%</Avatar>
+<Avatar sx={{ bgcolor: "orange",fontSize:"1rem" }}>40%</Avatar>
+<Avatar sx={{ bgcolor: "red",fontSize:"1rem" }}>40%</Avatar>
+                                            </div>
                                             <Button
                                                 variant="outlined"
                                                 sx={{ color: 'blue' }}

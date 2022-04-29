@@ -2,12 +2,16 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import MenuIcon from '@mui/icons-material/Menu'
 import ScubaDivingIcon from '@mui/icons-material/ScubaDiving'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications'
+import ToggleButton from '@mui/material/ToggleButton'
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import MuiAppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
-import Modal from '../components/Modal/Modal'
+import CampaignModal from '../components/CampaignModal/CampaignModal'
 import CssBaseline from '@mui/material/CssBaseline'
 import Divider from '@mui/material/Divider'
 import MuiDrawer from '@mui/material/Drawer'
@@ -110,11 +114,12 @@ function DashboardContent() {
 
     const [state, setState] = useState([
         {
+            id: 1,
             name: 'campaign 1',
             state: 'LIVE',
-            seniorites: [],
-            keywords: [],
-            companysList: [],
+            seniorites: ["conan", "conan 2"],
+            keywords: ["lentil"],
+            companysList: ["scare"],
         },
     ])
 
@@ -137,7 +142,26 @@ function DashboardContent() {
     return (
         <ThemeProvider theme={mdTheme}>
             <Box sx={{ display: 'flex' }}>
-                <Modal isOpen={isOpen} handleClose={handleClose} />
+                <CampaignModal
+                    isOpen={isOpen}
+                    handleClose={handleClose}
+                    onSubmit={(name: any) => {
+                        handleClose()
+                        setState((prevstate: any) => {
+                            return [
+                                {
+                                    id: prevstate.length + 1,
+                                    name: name,
+                                    state: 'LIVE',
+                                    seniorites: [],
+                                    keywords: [],
+                                    companysList: [],
+                                },
+                                ...prevstate,
+                            ]
+                        })
+                    }}
+                />
                 <CssBaseline />
                 <AppBar position="absolute" open={open}>
                     <Toolbar
@@ -224,51 +248,159 @@ function DashboardContent() {
                                 marginTop: 2,
                             }}
                         >
-                            <Accordion
-                                expanded={expanded === 'panel1'}
-                                onChange={handleChange('panel1')}
-                            >
-                                <AccordionSummary
-                                    aria-controls="panel1bh-content"
-                                    id="panel1bh-header"
-                                >
-                                    <Typography
-                                        sx={{ width: '33%', flexShrink: 0 }}
+                            {state.map((item: any) => {
+                                return (
+                                    <Accordion
+                                        expanded={
+                                            expanded == item.id.toString()
+                                        }
+                                        onChange={handleChange(item.id)}
+                                        key={item.id}
                                     >
-                                        Campaign 1
-                                    </Typography>
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <Typography>
-                                        Nulla facilisi. Phasellus sollicitudin
-                                        nulla et quam mattis feugiat. Aliquam
-                                        eget maximus est, id dignissim quam.
-                                    </Typography>
-                                </AccordionDetails>
-                            </Accordion>
-                            <Accordion
-                                expanded={expanded === 'panel2'}
-                                onChange={handleChange('panel2')}
-                            >
-                                <AccordionSummary
-                                    aria-controls="panel2bh-content"
-                                    id="panel2bh-header"
-                                >
-                                    <Typography
-                                        sx={{ width: '33%', flexShrink: 0 }}
-                                    >
-                                        Campaign 2{' '}
-                                    </Typography>
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <Typography>
-                                        Donec placerat, lectus sed mattis
-                                        semper, neque lectus feugiat lectus,
-                                        varius pulvinar diam eros in elit.
-                                        Pellentesque convallis laoreet laoreet.
-                                    </Typography>
-                                </AccordionDetails>
-                            </Accordion>
+                                        <AccordionSummary
+                                            aria-controls="panel1bh-content"
+                                            id="panel1bh-header"
+                                        >
+                                            <Typography
+                                                sx={{
+                                                    width: '33%',
+                                                    flexShrink: 0,
+                                                }}
+                                            >
+                                                {item.name}
+                                            </Typography>
+                                            <ToggleButtonGroup
+                                                color="primary"
+                                                value={item.state}
+                                                exclusive
+                                                onChange={(
+                                                    event: React.MouseEvent<HTMLElement>,
+                                                    newAlignment: string
+                                                ) => {
+                                                    event.preventDefault();
+                                                    event.stopPropagation();
+
+                                                    setState(
+                                                        (prevState: any) => {
+                                                            const conan =
+                                                                prevState.map(
+                                                                    (
+                                                                        elm: any
+                                                                    ) => {
+                                                                        let newItem =
+                                                                            {
+                                                                                ...elm,
+                                                                            }
+                                                                        if (
+                                                                            elm.id ==
+                                                                            item.id
+                                                                        ) {
+                                                                            newItem.state =
+                                                                                newAlignment
+                                                                        }
+                                                                        return newItem
+                                                                    }
+                                                                )
+
+                                                            return conan
+                                                        }
+                                                    )
+                                                }}
+                                            >
+                                                <ToggleButton value="LIVE">
+                                                    LIVE
+                                                </ToggleButton>
+                                                <ToggleButton value="INACTIVE">
+                                                    INACTIVE
+                                                </ToggleButton>
+                                                <ToggleButton value="ARCHIEVE">
+                                                    ARCHIEVE
+                                                </ToggleButton>
+                                            </ToggleButtonGroup>
+                                        </AccordionSummary>
+                                        <AccordionDetails>
+                                            <Card sx={{ mb: '2rem' }}>
+                                                <CardContent
+                                                    sx={{
+                                                        display: 'flex',
+                                                        gap: '1rem',
+                                                        justifyContent:
+                                                            'space-between',
+                                                    }}
+                                                >
+                                                    {item.seniorites.map(
+                                                        (a: any) => {
+                                                            return (
+                                                                <Typography
+                                                                    variant={
+                                                                        'h6'
+                                                                    }
+                                                                    gutterBottom
+                                                                    key={a}
+                                                                >
+                                                                    {a}
+                                                                </Typography>
+                                                            )
+                                                        }
+                                                    )}
+                                                </CardContent>
+                                            </Card>
+                                            <Card sx={{ mb: '2rem' }}>
+                                                <CardContent
+                                                    sx={{
+                                                        display: 'flex',
+                                                        gap: '1rem',
+                                                        justifyContent:
+                                                            'space-between',
+                                                    }}
+                                                >
+                                                    {item.companysList.map(
+                                                        (a: any) => {
+                                                            return (
+                                                                <Typography
+                                                                    variant={
+                                                                        'h6'
+                                                                    }
+                                                                    gutterBottom
+                                                                    key={a}
+                                                                >
+                                                                    {a}
+                                                                </Typography>
+                                                            )
+                                                        }
+                                                    )}
+                                                </CardContent>
+                                            </Card>
+                                            <Card sx={{ mb: '2rem' }}>
+                                                <CardContent
+                                                    sx={{
+                                                        display: 'flex',
+                                                        gap: '1rem',
+                                                        justifyContent:
+                                                            'space-between',
+                                                    }}
+                                                >
+                                                    {item.keywords.map(
+                                                        (a: any) => {
+                                                            return (
+                                                                <Typography
+                                                                    variant={
+                                                                        'h6'
+                                                                    }
+                                                                    gutterBottom
+                                                                    key={a}
+                                                                >
+                                                                    {a}
+                                                                </Typography>
+                                                            )
+                                                        }
+                                                    )}
+                                                </CardContent>
+                                            </Card>
+                                        </AccordionDetails>
+                                    </Accordion>
+                                )
+                            })}
                         </Paper>
                     </Container>
                 </Box>

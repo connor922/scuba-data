@@ -9,8 +9,8 @@ import { useCSVReader } from 'react-papaparse'
 
 const steps = ['Upload file']
 
-export default function HorizontalLinearStepper({onClose}:any) {
-    const [activeStep, setActiveStep] = React.useState(0);
+export default function HorizontalLinearStepper({ onClose }: any) {
+    const [activeStep, setActiveStep] = React.useState(0)
     const [state, setState] = React.useState([])
     const [skipped, setSkipped] = React.useState(new Set<number>())
     const { CSVReader } = useCSVReader()
@@ -83,7 +83,9 @@ export default function HorizontalLinearStepper({onClose}:any) {
                     </Typography>
                     <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                         <Box sx={{ flex: '1 1 auto' }} />
-                        <Button onClick={()=>onClose(state)}>Calculate</Button>
+                        <Button onClick={() => onClose(state)}>
+                            Calculate
+                        </Button>
                     </Box>
                 </React.Fragment>
             ) : (
@@ -93,7 +95,7 @@ export default function HorizontalLinearStepper({onClose}:any) {
                         <Stepper />{' '}
                         <CSVReader
                             onUploadAccepted={(results: any) => {
-                                setState(results.data);
+                                setState(results.data)
                             }}
                         >
                             {({
@@ -103,7 +105,7 @@ export default function HorizontalLinearStepper({onClose}:any) {
                                 getRemoveFileProps,
                             }: any) => (
                                 <>
-                                    <div style={{display:"flex"}}>
+                                    <div style={{ display: 'flex' }}>
                                         <button
                                             type="button"
                                             {...getRootProps()}

@@ -358,7 +358,7 @@ function DashboardContent() {
                                                                     ) => {
                                                                         return prevstate.map(
                                                                             (
-                                                                                long
+                                                                                long:any
                                                                             ) => {
                                                                                 let data =
                                                                                     {
@@ -421,7 +421,7 @@ function DashboardContent() {
                                                                             ) => {
                                                                                 return prevstate.map(
                                                                                     (
-                                                                                        long
+                                                                                        long:any
                                                                                     ) => {
                                                                                         let data =
                                                                                             {
@@ -438,7 +438,7 @@ function DashboardContent() {
                                                                                                     seniorites:
                                                                                                         data.seniorites.map(
                                                                                                             (
-                                                                                                                r
+                                                                                                                r:any
                                                                                                             ) => {
                                                                                                                 if (
                                                                                                                     a.id ===
@@ -469,7 +469,7 @@ function DashboardContent() {
                                                                             ) => {
                                                                                 return prevstate.map(
                                                                                     (
-                                                                                        long
+                                                                                        long:any
                                                                                     ) => {
                                                                                         let data =
                                                                                             {
@@ -486,7 +486,7 @@ function DashboardContent() {
                                                                                                     seniorites:
                                                                                                         data.seniorites.filter(
                                                                                                             (
-                                                                                                                r
+                                                                                                                r:any
                                                                                                             ) => {
                                                                                                                 
                                                                                                                 return    a.id !==
@@ -532,7 +532,7 @@ function DashboardContent() {
                                                                             ) => {
                                                                                 return prevstate.map(
                                                                                     (
-                                                                                        long
+                                                                                        long:any
                                                                                     ) => {
                                                                                         let data =
                                                                                             {
@@ -549,7 +549,7 @@ function DashboardContent() {
                                                                                                     seniorites:
                                                                                                         data.seniorites.map(
                                                                                                             (
-                                                                                                                r
+                                                                                                                r:any
                                                                                                             ) => {
                                                                                                                 if (
                                                                                                                     a.id ===

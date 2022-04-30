@@ -30,6 +30,8 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Typography from '@mui/material/Typography'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
+import Chip from '@mui/material/Chip'
+import TextField from '@mui/material/TextField'
 
 const drawerWidth = 240
 
@@ -111,15 +113,22 @@ const mdTheme = createTheme()
 function DashboardContent() {
     const [open, setOpen] = useState(false)
     const [expanded, setExpanded] = useState('')
-
+    const [senority, setSenority] = useState('')
     const [state, setState] = useState([
         {
             id: 1,
             name: 'campaign 1',
             state: 'LIVE',
-            seniorites: ["conan", "conan 2"],
-            keywords: ["lentil"],
-            companysList: ["scare"],
+            seniorites: [
+                { id: 1, name: 'conan', isIncluded: true },
+                { id: 2, name: 'conan2', isIncluded: true },
+                { id: 3, name: 'coansndsad', isIncluded: true },
+                { id: 4, name: 'adsadsad', isIncluded: false },
+                { id: 5, name: 'asdsdasd', isIncluded: false },
+                { id: 6, name: 'sadasdsdfd', isIncluded: false },
+            ],
+            keywords: ['lentil'],
+            companysList: ['scare'],
         },
     ])
 
@@ -277,8 +286,8 @@ function DashboardContent() {
                                                     event: React.MouseEvent<HTMLElement>,
                                                     newAlignment: string
                                                 ) => {
-                                                    event.preventDefault();
-                                                    event.stopPropagation();
+                                                    event.preventDefault()
+                                                    event.stopPropagation()
 
                                                     setState(
                                                         (prevState: any) => {
@@ -313,8 +322,8 @@ function DashboardContent() {
                                                 <ToggleButton value="INACTIVE">
                                                     INACTIVE
                                                 </ToggleButton>
-                                                <ToggleButton value="ARCHIEVE">
-                                                    ARCHIEVE
+                                                <ToggleButton value="ARCHIVE">
+                                                    ARCHIVE
                                                 </ToggleButton>
                                             </ToggleButtonGroup>
                                         </AccordionSummary>
@@ -324,25 +333,250 @@ function DashboardContent() {
                                                     sx={{
                                                         display: 'flex',
                                                         gap: '1rem',
-                                                        justifyContent:
-                                                            'space-between',
                                                     }}
                                                 >
-                                                    {item.seniorites.map(
-                                                        (a: any) => {
-                                                            return (
-                                                                <Typography
-                                                                    variant={
-                                                                        'h6'
+                                                    <div>
+                                                        <TextField
+                                                            id="standard-basic"
+                                                            label="item"
+                                                            variant="standard"
+                                                            value={senority}
+                                                            onChange={(
+                                                                event
+                                                            ) => {
+                                                                setSenority(
+                                                                    event.target
+                                                                        .value
+                                                                )
+                                                            }}
+                                                        />
+                                                        <Button
+                                                            onClick={() => {
+                                                                setState(
+                                                                    (
+                                                                        prevstate: any
+                                                                    ) => {
+                                                                        return prevstate.map(
+                                                                            (
+                                                                                long
+                                                                            ) => {
+                                                                                let data =
+                                                                                    {
+                                                                                        ...long,
+                                                                                    }
+
+                                                                                if (
+                                                                                    long.id ===
+                                                                                    item.id
+                                                                                ) {
+                                                                                    data =
+                                                                                        {
+                                                                                            ...data,
+                                                                                            seniorites:
+                                                                                                [
+                                                                                                    ...data.seniorites,
+                                                                                                    {
+                                                                                                        id: data
+                                                                                                            .seniorites
+                                                                                                            .length,
+                                                                                                        name: senority,
+                                                                                                        isIncluded:
+                                                                                                            true,
+                                                                                                    },
+                                                                                                ],
+                                                                                        }
+                                                                                }
+
+                                                                                return data
+                                                                            }
+                                                                        )
                                                                     }
-                                                                    gutterBottom
-                                                                    key={a}
-                                                                >
-                                                                    {a}
-                                                                </Typography>
+                                                                )
+                                                            }}
+                                                        >
+                                                            Add
+                                                        </Button>
+                                                    </div>
+                                                    {item.seniorites
+                                                        .filter(
+                                                            (a: any) =>
+                                                                a.isIncluded
+                                                        )
+                                                        .map((a: any) => {
+                                                            return (
+                                                                <Chip
+                                                                    key={a.name}
+                                                                    sx={{
+                                                                        bgcolor:
+                                                                            'green',
+                                                                        color: 'white',
+                                                                    }}
+                                                                    label={
+                                                                        a.name
+                                                                    }
+                                                                    onClick={() => {
+                                                                        setState(
+                                                                            (
+                                                                                prevstate: any
+                                                                            ) => {
+                                                                                return prevstate.map(
+                                                                                    (
+                                                                                        long
+                                                                                    ) => {
+                                                                                        let data =
+                                                                                            {
+                                                                                                ...long,
+                                                                                            }
+
+                                                                                        if (
+                                                                                            long.id ===
+                                                                                            item.id
+                                                                                        ) {
+                                                                                            data =
+                                                                                                {
+                                                                                                    ...data,
+                                                                                                    seniorites:
+                                                                                                        data.seniorites.map(
+                                                                                                            (
+                                                                                                                r
+                                                                                                            ) => {
+                                                                                                                if (
+                                                                                                                    a.id ===
+                                                                                                                    r.id
+                                                                                                                ) {
+                                                                                                                    return {
+                                                                                                                        ...r,
+                                                                                                                        isIncluded:
+                                                                                                                            false,
+                                                                                                                    }
+                                                                                                                }
+                                                                                                                return r
+                                                                                                            }
+                                                                                                        ),
+                                                                                                }
+                                                                                        }
+
+                                                                                        return data
+                                                                                    }
+                                                                                )
+                                                                            }
+                                                                        )
+                                                                    }}
+                                                                    onDelete={() => {
+                                                                        setState(
+                                                                            (
+                                                                                prevstate: any
+                                                                            ) => {
+                                                                                return prevstate.map(
+                                                                                    (
+                                                                                        long
+                                                                                    ) => {
+                                                                                        let data =
+                                                                                            {
+                                                                                                ...long,
+                                                                                            }
+
+                                                                                        if (
+                                                                                            long.id ===
+                                                                                            item.id
+                                                                                        ) {
+                                                                                            data =
+                                                                                                {
+                                                                                                    ...data,
+                                                                                                    seniorites:
+                                                                                                        data.seniorites.filter(
+                                                                                                            (
+                                                                                                                r
+                                                                                                            ) => {
+                                                                                                                
+                                                                                                                return    a.id !==
+                                                                                                                    r.id
+                                                                                                               
+                                                                                                            }
+                                                                                                        ),
+                                                                                                }
+                                                                                        }
+
+                                                                                        return data
+                                                                                    }
+                                                                                )
+                                                                            }
+                                                                        )
+
+
+                                                                    }}
+                                                                />
                                                             )
-                                                        }
-                                                    )}
+                                                        })}
+                                                    {item.seniorites
+                                                        .filter(
+                                                            (a: any) =>
+                                                                !a.isIncluded
+                                                        )
+                                                        .map((a: any) => {
+                                                            return (
+                                                                <Chip
+                                                                    key={a.name}
+                                                                    sx={{
+                                                                        bgcolor:
+                                                                            'red',
+                                                                        color: 'white',
+                                                                    }}
+                                                                    label={
+                                                                        a.name
+                                                                    }
+                                                                    onClick={() => {
+                                                                        setState(
+                                                                            (
+                                                                                prevstate: any
+                                                                            ) => {
+                                                                                return prevstate.map(
+                                                                                    (
+                                                                                        long
+                                                                                    ) => {
+                                                                                        let data =
+                                                                                            {
+                                                                                                ...long,
+                                                                                            }
+
+                                                                                        if (
+                                                                                            long.id ===
+                                                                                            item.id
+                                                                                        ) {
+                                                                                            data =
+                                                                                                {
+                                                                                                    ...data,
+                                                                                                    seniorites:
+                                                                                                        data.seniorites.map(
+                                                                                                            (
+                                                                                                                r
+                                                                                                            ) => {
+                                                                                                                if (
+                                                                                                                    a.id ===
+                                                                                                                    r.id
+                                                                                                                ) {
+                                                                                                                    return {
+                                                                                                                        ...r,
+                                                                                                                        isIncluded:
+                                                                                                                            true,
+                                                                                                                    }
+                                                                                                                }
+                                                                                                                return r
+                                                                                                            }
+                                                                                                        ),
+                                                                                                }
+                                                                                        }
+
+                                                                                        return data
+                                                                                    }
+                                                                                )
+                                                                            }
+                                                                        )
+                                                                    }}
+                                                                    onDelete={() => {}}
+                                                                />
+                                                            )
+                                                        })}
                                                 </CardContent>
                                             </Card>
                                             <Card sx={{ mb: '2rem' }}>

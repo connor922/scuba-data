@@ -5,7 +5,12 @@ import Stepper from '../Stepper/Stepper'
 
 export default function FormDialog({ isOpen, handleClose, processfile }: any) {
     return (
-        <Dialog open={isOpen} onClose={handleClose}>
+        <Dialog
+            open={isOpen}
+            onClose={handleClose}
+            fullWidth={true}
+            maxWidth={'sm'}
+        >
             <DialogTitle>Upload</DialogTitle>
             <DialogContent>
                 <Stepper onClose={processfile} />

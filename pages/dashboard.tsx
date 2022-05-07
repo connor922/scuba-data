@@ -102,6 +102,7 @@ function DashboardContent() {
                             height: '100%',
                             width: '100%',
                             marginTop: 2,
+                            minHeight: '60vh',
                         }}
                     >
                         {cards.map((cards: any, index: any) => {
@@ -115,15 +116,32 @@ function DashboardContent() {
                                             justifyContent: 'space-between',
                                         }}
                                     >
-                                        <Typography variant={'h6'} gutterBottom>
+                                        <Typography
+                                            variant={'h6'}
+                                            sx={{
+                                                flex: '1 1 0px',
+                                                fontWeight: 'bold',
+                                                lineHeight: 2,
+                                            }}
+                                        >
                                             {name}
                                         </Typography>
-                                        <Typography variant={'h6'}>
+                                        <Typography
+                                            variant={'h6'}
+                                            sx={{
+                                                flex: '1 1 0px',
+                                                lineHeight: 2,
+                                            }}
+                                        >
                                             {rowCount}
                                         </Typography>
                                         <Typography
                                             variant={'h6'}
-                                            sx={{ color: 'red' }}
+                                            sx={{
+                                                flex: '1 1 0px',
+                                                color: 'darkRed',
+                                                lineHeight: 2,
+                                            }}
                                         >
                                             {errorCount}
                                         </Typography>
@@ -131,12 +149,15 @@ function DashboardContent() {
                                             style={{
                                                 display: 'flex',
                                                 gap: '5px',
+                                                flex: '1 1 0px',
                                             }}
                                         >
                                             <Avatar
                                                 sx={{
                                                     bgcolor: 'green',
-                                                    fontSize: '1rem',
+                                                    fontSize: '0.95rem',
+                                                    paddingLeft: '5px',
+                                                    paddingTop: '2px',
                                                 }}
                                             >
                                                 20%
@@ -144,15 +165,19 @@ function DashboardContent() {
                                             <Avatar
                                                 sx={{
                                                     bgcolor: 'orange',
-                                                    fontSize: '1rem',
+                                                    fontSize: '0.95rem',
+                                                    paddingLeft: '5px',
+                                                    paddingTop: '2px',
                                                 }}
                                             >
                                                 40%
                                             </Avatar>
                                             <Avatar
                                                 sx={{
-                                                    bgcolor: 'red',
-                                                    fontSize: '1rem',
+                                                    bgcolor: 'crimson',
+                                                    fontSize: '0.95rem',
+                                                    paddingLeft: '5px',
+                                                    paddingTop: '2px',
                                                 }}
                                             >
                                                 40%
@@ -160,7 +185,10 @@ function DashboardContent() {
                                         </div>
                                         <Button
                                             variant="outlined"
-                                            sx={{ color: 'blue' }}
+                                            sx={{
+                                                color: 'blue',
+                                                flex: '1 1 0px',
+                                            }}
                                             onClick={() => {
                                                 var csvData = new Blob([file], {
                                                     type: 'text/csv;charset=utf-8;',

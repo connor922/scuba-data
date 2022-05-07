@@ -69,16 +69,23 @@ export default function HorizontalLinearStepper({ onClose }: any) {
                                     >
                                         Upload
                                     </Button>
-                                    <div>
+                                    <div
+                                        style={{
+                                            margin: 'auto',
+                                            marginLeft: '1rem',
+                                        }}
+                                    >
                                         {acceptedFile && acceptedFile.name}
                                     </div>
-                                    <Button
-                                        variant="contained"
-                                        component="span"
-                                        {...getRemoveFileProps()}
-                                    >
-                                        Remove
-                                    </Button>
+                                    {acceptedFile && acceptedFile.name && (
+                                        <Button
+                                            variant="contained"
+                                            component="span"
+                                            {...getRemoveFileProps()}
+                                        >
+                                            Remove
+                                        </Button>
+                                    )}
                                 </div>
                                 <ProgressBar />
                             </>
@@ -86,14 +93,15 @@ export default function HorizontalLinearStepper({ onClose }: any) {
                     </CSVReader>
                 </Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                    <Button
-                        color="inherit"
-                        disabled={activeStep === 0}
-                        onClick={handleBack}
-                        sx={{ mr: 1 }}
-                    >
-                        Back
-                    </Button>
+                    {activeStep !== 0 && (
+                        <Button
+                            color="inherit"
+                            onClick={handleBack}
+                            sx={{ mr: 1 }}
+                        >
+                            Back
+                        </Button>
+                    )}
                     <Box sx={{ flex: '1 1 auto' }} />
                     <Button onClick={handleNext}>Next</Button>
                 </Box>
@@ -138,12 +146,9 @@ export default function HorizontalLinearStepper({ onClose }: any) {
             <Stepper activeStep={activeStep}>
                 {steps.map((label) => {
                     const stepProps: { completed?: boolean } = {}
-                    const labelProps: {
-                        optional?: React.ReactNode
-                    } = {}
                     return (
                         <Step key={label} {...stepProps}>
-                            <StepLabel {...labelProps}>{label}</StepLabel>
+                            <StepLabel>{label}</StepLabel>
                         </Step>
                     )
                 })}

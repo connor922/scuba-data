@@ -12,14 +12,13 @@ export default function CampaignModal({ isOpen, handleClose, onSubmit }: any) {
     const [name, setName] = useState('')
     return (
         <Dialog open={isOpen} onClose={handleClose}>
-            <DialogTitle>Subscribe</DialogTitle>
+            <DialogTitle>Choose a Campaign name</DialogTitle>
             <DialogContent>
-                <DialogContentText>Choose a Campaign name</DialogContentText>
                 <TextField
                     autoFocus
                     margin="dense"
                     id="name"
-                    label="Email Address"
+                    label="Name"
                     type="email"
                     fullWidth
                     variant="standard"
@@ -36,7 +35,7 @@ export default function CampaignModal({ isOpen, handleClose, onSubmit }: any) {
                         onSubmit(name)
                     }}
                 >
-                    Subscribe
+                    Add
                 </Button>
             </DialogActions>
         </Dialog>

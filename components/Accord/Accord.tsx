@@ -280,7 +280,7 @@ export default function HorizontalLinearStepper({
                                                         {
                                                             id: data.keywords
                                                                 .length,
-                                                            name: keywords,
+                                                            name: keyword,
                                                             isIncluded: true,
                                                         },
                                                     ],

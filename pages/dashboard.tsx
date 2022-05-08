@@ -66,7 +66,7 @@ function DashboardContent() {
                 }}
             >
                 <Toolbar />
-                <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+                <Box sx={{ m: 4 }}>
                     <Button variant="outlined" onClick={handleClickOpen}>
                         Upload
                     </Button>
@@ -226,7 +226,7 @@ function DashboardContent() {
                             )
                         })}
                     </Paper>
-                </Container>
+                </Box>
             </Box>
         </Box>
     )

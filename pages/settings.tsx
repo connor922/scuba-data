@@ -3,45 +3,31 @@ import Button from '@mui/material/Button'
 import CssBaseline from '@mui/material/CssBaseline'
 import Paper from '@mui/material/Paper'
 import Toolbar from '@mui/material/Toolbar'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import CampaignModal from '../components/CampaignModal/CampaignModal'
 import Wrapper from '../components/Wrapper/Wrapper'
 import Accord from '../components/Accord/Accord'
 
+import useSWR from "swr";
+
+const fetcher = async (url: string) => {
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw Error("Yo that's NOT OK!!!");
+  }
+  const data = await res.json();
+  return data;
+};
+
 function Settings() {
     const [expanded, setExpanded] = useState('')
-    const [state, setState] = useState([
-        {
-            id: 1,
-            name: 'Campaign 1',
-            state: 'LIVE',
-            seniorites: [
-                { id: 1, name: 'Director', isIncluded: true },
-                { id: 2, name: 'Manager', isIncluded: true },
-                { id: 3, name: 'CEO', isIncluded: true },
-                { id: 4, name: 'CFO', isIncluded: false },
-                { id: 5, name: 'COO', isIncluded: false },
-                { id: 6, name: 'Senior', isIncluded: false },
-            ],
-            keywords: [
-                { id: 1, name: 'Technology', isIncluded: true },
-                { id: 2, name: 'Logistics', isIncluded: true },
-                { id: 3, name: 'Property', isIncluded: true },
-                { id: 4, name: 'Management', isIncluded: false },
-                { id: 5, name: 'Info Security', isIncluded: false },
-            ],
-            companysList: [
-                { id: 1, name: 'Google', isIncluded: true },
-                { id: 2, name: 'Amazon', isIncluded: true },
-                { id: 3, name: 'Foxtons', isIncluded: true },
-                { id: 4, name: 'Statpro', isIncluded: false },
-                { id: 5, name: 'Conflience', isIncluded: false },
-                { id: 6, name: 'Sainsburys', isIncluded: false },
-            ],
-        },
-    ])
-
+    const [state, setState] = useState([]);
     const [isOpen, setIsOpen] = useState(false)
+    const [isLoading, setIsLoading] = useState(true);
+    const result = useSWR(`/api/user/1`, fetcher);
+    const data = result.data;
+    
+
     const handleClickOpen = () => {
         setIsOpen(true)
     }
@@ -54,6 +40,13 @@ function Settings() {
             return event == prevstate ? '' : event
         })
     }
+
+    useEffect(()=>{
+        if(data){
+            setState(data);
+            setIsLoading(false);
+        }
+    },[data])
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -104,8 +97,9 @@ function Settings() {
                             marginTop: 2,
                             gap: '2rem',
                         }}
-                    >
-                        {state.map((item: any) => {
+                    > 
+                    {!isLoading ? state.map((item: any) => {
+                        debugger;
                             return (
                                 <Accord
                                     key={item.id}
@@ -119,8 +113,7 @@ function Settings() {
                                     name={item.name}
                                     state={item.state}
                                 />
-                            )
-                        })}
+                            )}): <div>loading</div>}
                     </Box>
                 </Box>
             </Box>

@@ -11,6 +11,9 @@ import Paper from '@mui/material/Paper'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import * as React from 'react'
+import { useRouter } from 'next/router'
+import useUser from '../data/use-user'
+import { login } from '../libs/auth'
 
 export default function SignInSide() {
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -21,6 +24,17 @@ export default function SignInSide() {
             password: data.get('password'),
         })
     }
+
+    const router = useRouter()
+
+    const { user, mutate, loggedOut } = useUser()
+
+    // if logged in, redirect to the dashboard
+    React.useEffect(() => {
+        if (user && !loggedOut) {
+            router.replace('/dashboard')
+        }
+    }, [user, loggedOut])
 
     return (
         <Grid container component="main" sx={{ height: '100vh' }}>
@@ -111,7 +125,6 @@ export default function SignInSide() {
                             label="Remember me"
                         />
                         <Link
-                            href="/dashboard"
                             sx={{
                                 color: '#FFFFFF',
                                 textDecoration: 'none',
@@ -121,6 +134,10 @@ export default function SignInSide() {
                                 fullWidth
                                 variant="contained"
                                 sx={{ mt: 3, mb: 2 }}
+                                onClick={() => {
+                                    login()
+                                    mutate()
+                                }}
                             >
                                 Sign In
                             </Button>

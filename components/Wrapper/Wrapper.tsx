@@ -1,8 +1,8 @@
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import DashboardIcon from '@mui/icons-material/Dashboard'
+import LogoutIcon from '@mui/icons-material/Logout'
 import MenuIcon from '@mui/icons-material/Menu'
-import ScubaDivingIcon from '@mui/icons-material/ScubaDiving'
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications'
 import MuiAppBar from '@mui/material/AppBar'
 import Divider from '@mui/material/Divider'
@@ -15,8 +15,9 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import { styled } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
-import Typography from '@mui/material/Typography'
 import { Fragment, useState } from 'react'
+import useUser from '../../data/use-user'
+import { logout } from '../../libs/auth'
 
 const drawerWidth = 240
 
@@ -100,12 +101,35 @@ export default function Wrapper({ pageName }: any) {
         setOpen(!open)
     }
 
+    const { user, loading, mutate } = useUser()
+
+    let profile = null
+    if (loading) {
+        profile = 'loading...'
+    }
+    if (user) {
+        profile = (
+            <IconButton
+                edge="start"
+                color="inherit"
+                onClick={() => {
+                    logout()
+                    mutate()
+                }}
+            >
+                <LogoutIcon />
+            </IconButton>
+        )
+    }
+
     return (
         <>
             <AppBar position="absolute" open={open}>
                 <Toolbar
                     sx={{
                         pr: '24px',
+                        display: 'flex',
+                        justifyContent: 'space-between',
                     }}
                 >
                     <IconButton
@@ -120,22 +144,7 @@ export default function Wrapper({ pageName }: any) {
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Link href="/" sx={{ color: '#FFFFFF' }}>
-                        <Typography
-                            component="h1"
-                            variant="h6"
-                            color="inherit"
-                            noWrap
-                            sx={{ flexGrow: 1, color: '#FFFFFF' }}
-                        >
-                            <IconButton
-                                color="inherit"
-                                sx={{ color: '#FFFFFF' }}
-                            >
-                                <ScubaDivingIcon sx={{ color: '#FFFFFF' }} />
-                            </IconButton>
-                        </Typography>
-                    </Link>
+                    {profile}
                 </Toolbar>
             </AppBar>
             <Drawer variant="permanent" open={open}>

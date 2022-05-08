@@ -8,10 +8,12 @@ import CssBaseline from '@mui/material/CssBaseline'
 import Paper from '@mui/material/Paper'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import { useState } from 'react'
+import Router from 'next/router'
+import { useEffect, useState } from 'react'
 import { usePapaParse } from 'react-papaparse'
 import Modal from '../components/Modal/Modal'
 import Wrapper from '../components/Wrapper/Wrapper'
+import useUser from '../data/use-user'
 
 const initialCards: any = [
     {
@@ -31,12 +33,21 @@ function DashboardContent() {
     const [cards, setCards] = useState(initialCards)
     const { jsonToCSV } = usePapaParse()
 
+    const { user, loading, loggedOut, mutate } = useUser()
+
     const handleClickOpen = () => {
         setIsOpen(true)
     }
     const handleClose = () => {
         setIsOpen(false)
     }
+
+    useEffect(() => {
+        if (loggedOut) {
+            Router.replace('/')
+        }
+    }, [loggedOut])
+    if (loggedOut) return 'redirecting...'
 
     return (
         <Box sx={{ display: 'flex' }}>

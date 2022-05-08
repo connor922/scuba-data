@@ -21,7 +21,7 @@ const fetcher = async (url: string) => {
 
 function Settings() {
     const [expanded, setExpanded] = useState('')
-    const [state, setState] = useState([]);
+    const [state, setState] = useState<any[]>([]);
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(true);
     const result = useSWR(`/api/user/1`, fetcher);

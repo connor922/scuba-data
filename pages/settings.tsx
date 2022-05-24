@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CssBaseline from '@mui/material/CssBaseline'
-import Paper from '@mui/material/Paper'
+import Link from '@mui/material/Link'
 import Toolbar from '@mui/material/Toolbar'
 import { useEffect, useState } from 'react'
 import CampaignModal from '../components/CampaignModal/CampaignModal'
@@ -44,7 +44,7 @@ function Settings() {
 
     useEffect(()=>{
         if(data){
-            setState(data);
+            setState(data.filter((a:any) => a.state !== "ARCHIVED"));
             setIsLoading(false);
         }
     },[data])
@@ -87,9 +87,16 @@ function Settings() {
             >
                 <Toolbar />
                 <Box sx={{ m: 4 }}>
+                    <Box sx={{ display:"flex", justifyContent:"space-between" }}>
                     <Button variant="outlined" onClick={handleClickOpen}>
-                        create
+                        Create
                     </Button>
+                    <Link href="/archieved-campaigns">
+                        <Button variant="contained" >
+                            View Archieved Campaigns
+                        </Button>
+                    </Link>
+                    </Box>
                     <Box
                         sx={{
                             display: 'flex',

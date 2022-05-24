@@ -151,7 +151,7 @@ export default function HorizontalLinearStepper({
                 >
                     <ToggleButton value="LIVE">LIVE</ToggleButton>
                     <ToggleButton value="INACTIVE">INACTIVE</ToggleButton>
-                    <ToggleButton value="ARCHIVE">ARCHIVE</ToggleButton>
+                    <ToggleButton value="ARCHIVED">ARCHIVED</ToggleButton>
                 </ToggleButtonGroup>
             </AccordionSummary>
             <AccordionDetails

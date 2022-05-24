@@ -33,6 +33,23 @@ var data = [[
         { id: 2, name: 'Analyst', isIncluded: false },
     ],
   },
+  {
+    id: 2,
+    name: 'Campaign 2',
+    state: 'ARCHIVED',
+    seniorites: [
+        { id: 1, name: 'Director', isIncluded: true },
+    ],
+    keywords: [
+        { id: 1, name: 'Technology', isIncluded: true },
+    ],
+    companysList: [
+        { id: 1, name: 'Google', isIncluded: true },
+    ],
+    jobTitles: [
+      { id: 2, name: 'Analyst', isIncluded: false },
+  ],
+},
 ]]
 
 

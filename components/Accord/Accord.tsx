@@ -96,9 +96,11 @@ export default function HorizontalLinearStepper({
     seniorites,
     keywords,
     companysList,
+    jobTitles
 }: any) {
     const [senority, setSenority] = useState('')
     const [companyList, setCompanyList] = useState('')
+    const [jobTitle, setJobTitle] = useState('')
     const [keyword, setKeyword] = useState('')
 
     const { CSVReader } = useCSVReader()
@@ -321,6 +323,85 @@ export default function HorizontalLinearStepper({
                                 filterProp="isIncluded"
                                 newState={false}
                                 listName={'keywords'}
+                                setState={setState}
+                                id={id}
+                                colour="crimson"
+                            />
+                        </div>
+                    </Box>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            gap: '1rem',
+                            flexDirection: 'column',
+                            pt: '2rem',
+                        }}
+                    >
+                        <Typography sx={{ fontWeight: 600 }}>
+                            Job Titles
+                        </Typography>
+                        <div style={{ display: 'flex' }}>
+                            <TextField
+                                id="standard-basic"
+                                placeholder="job title"
+                                variant="standard"
+                                value={jobTitle}
+                                onChange={(event) => {
+                                    setJobTitle(event.target.value)
+                                }}
+                            />
+                            <Button
+                                onClick={() => {
+                                    setState((prevstate: any) => {
+                                        return prevstate.map((long: any) => {
+                                            let data = {
+                                                ...long,
+                                            }
+
+                                            if (long.id === id) {
+                                                data = {
+                                                    ...data,
+                                                    jobTitles: [
+                                                        ...data.jobTitles,
+                                                        {
+                                                            id: data.jobTitles
+                                                                .length,
+                                                            name: jobTitle,
+                                                            isIncluded: true,
+                                                        },
+                                                    ],
+                                                }
+                                            }
+
+                                            return data
+                                        })
+                                    })
+                                }}
+                            >
+                                Add
+                            </Button>
+                        </div>
+                        <div
+                            style={{
+                                display: 'flex',
+                                gap: '1rem',
+                                flexWrap: 'wrap',
+                            }}
+                        >
+                            <List
+                                items={jobTitles}
+                                filterProp="isIncluded"
+                                newState={true}
+                                listName={'jobTitles'}
+                                setState={setState}
+                                id={id}
+                                colour="green"
+                            />
+                            <List
+                                items={jobTitles}
+                                filterProp="isIncluded"
+                                newState={false}
+                                listName={'jobTitles'}
                                 setState={setState}
                                 id={id}
                                 colour="crimson"

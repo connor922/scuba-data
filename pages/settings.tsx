@@ -65,6 +65,7 @@ function Settings() {
                                 seniorites: [],
                                 keywords: [],
                                 companysList: [],
+                                jobTitles:[]
                             },
                             ...prevstate,
                         ]
@@ -107,6 +108,7 @@ function Settings() {
                                     seniorites={item.seniorites}
                                     keywords={item.keywords}
                                     companysList={item.companysList}
+                                    jobTitles={item.jobTitles}
                                     isExpanded={expanded == item.id.toString()}
                                     id={item.id}
                                     handleChange={handleChange}

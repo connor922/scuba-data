@@ -28,6 +28,10 @@ var data = [[
           { id: 5, name: 'Conflience', isIncluded: false },
           { id: 6, name: 'Sainsburys', isIncluded: false },
       ],
+      jobTitles: [
+        { id: 1, name: 'Developer', isIncluded: true },
+        { id: 2, name: 'Analyst', isIncluded: false },
+    ],
   },
 ]]
 

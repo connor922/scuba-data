@@ -8,7 +8,10 @@ import TextField from '@mui/material/TextField'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
-import { useState } from 'react'
+import AddIcon from '@mui/icons-material/Add';
+import { useState } from 'react';
+import { useCSVReader } from 'react-papaparse'
+
 
 function List({
     items,
@@ -97,6 +100,8 @@ export default function HorizontalLinearStepper({
     const [senority, setSenority] = useState('')
     const [companyList, setCompanyList] = useState('')
     const [keyword, setKeyword] = useState('')
+
+    const { CSVReader } = useCSVReader()
 
     return (
         <Accordion expanded={isExpanded} onChange={() => handleChange(id)}>
@@ -367,6 +372,61 @@ export default function HorizontalLinearStepper({
                         >
                             Add
                         </Button>
+                        <CSVReader
+                        onUploadAccepted={(results: any) => {
+                            setState((prevstate: any) => {
+                                return prevstate.map((long: any) => {
+                                    let data = {
+                                        ...long,
+                                    }
+                                    const items = results.data.slice(1)
+                                    const newItems = items.reduce((memo:any, b:string[], index:number)=>{
+                                        if(b.length == 2 ){
+                                            debugger;
+                                            memo.push(
+                                                {
+                                                    id: data.companysList
+                                                        .length + index,
+                                                    name: b[0],
+                                                    isIncluded: b[1] === "TRUE",
+                                                },
+                                            )
+                                        }
+        
+                                        return memo 
+                                    },[])
+
+                                    if (long.id === id) {
+                                        data = {
+                                            ...data,
+                                            companysList: [
+                                                ...data.companysList,
+                                                ...newItems
+                                            ],
+                                        }
+                                    }
+
+                                    return data
+                                })
+                            })
+                        }}
+                    >
+                        {({
+                            getRootProps,
+                        }: any) => (
+
+                        
+                                    <Button
+                                        variant="contained"
+                                        component="span"
+                                        {...getRootProps()}
+                                    >
+                                        <AddIcon/>
+                                        Upload
+                                    </Button>
+                                    
+                        )}
+                    </CSVReader>
                     </div>
                     <div
                         style={{

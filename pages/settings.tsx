@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import CampaignModal from '../components/CampaignModal/CampaignModal'
 import Wrapper from '../components/Wrapper/Wrapper'
 import Accord from '../components/Accord/Accord'
+import CircularProgress from '@mui/material/CircularProgress';
 
 import useSWR from "swr";
 
@@ -99,7 +100,6 @@ function Settings() {
                         }}
                     > 
                     {!isLoading ? state.map((item: any) => {
-                        debugger;
                             return (
                                 <Accord
                                     key={item.id}
@@ -113,7 +113,9 @@ function Settings() {
                                     name={item.name}
                                     state={item.state}
                                 />
-                            )}): <div>loading</div>}
+                            )}):  <Box sx={{ display: 'flex', width:"100%", justifyContent: 'center' }}>
+                            <CircularProgress />
+                          </Box>}
                     </Box>
                 </Box>
             </Box>

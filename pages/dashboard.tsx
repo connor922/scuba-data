@@ -47,6 +47,7 @@ function DashboardContent() {
             Router.replace('/')
         }
     }, [loggedOut])
+
     if (loggedOut) return 'redirecting...'
 
     return (

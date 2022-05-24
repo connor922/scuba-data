@@ -13,3 +13,16 @@ function MyApp({ Component, pageProps }: AppProps) {
 }
 
 export default MyApp
+
+
+
+/*
+
+some sort of database
+payment testing
+send and return data from backend
+
+
+
+
+*/

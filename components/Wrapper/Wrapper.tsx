@@ -3,6 +3,9 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import LogoutIcon from '@mui/icons-material/Logout'
 import MenuIcon from '@mui/icons-material/Menu'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
+import ScubaDivingIcon from '@mui/icons-material/ScubaDiving'
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications'
 import MuiAppBar from '@mui/material/AppBar'
 import Divider from '@mui/material/Divider'
@@ -107,6 +110,7 @@ export default function Wrapper({ pageName }: any) {
     if (loading) {
         profile = 'loading...'
     }
+
     if (user) {
         profile = (
             <IconButton
@@ -131,7 +135,7 @@ export default function Wrapper({ pageName }: any) {
                         display: 'flex',
                         justifyContent: 'space-between',
                     }}
-                >
+                >   <Box sx={{display:"flex"}}>
                     <IconButton
                         edge="start"
                         color="inherit"
@@ -144,6 +148,23 @@ export default function Wrapper({ pageName }: any) {
                     >
                         <MenuIcon />
                     </IconButton>
+                    <Link href="/" sx={{ color: '#FFFFFF' }}>
+                        <Typography
+                            component="h1"
+                            variant="h6"
+                            color="inherit"
+                            noWrap
+                            sx={{ flexGrow: 1, color: '#FFFFFF' }}
+                        >
+                            <IconButton
+                                color="inherit"
+                                sx={{ color: '#FFFFFF' }}
+                            >
+                                <ScubaDivingIcon sx={{ color: '#FFFFFF' }} />
+                            </IconButton>
+                        </Typography>
+                    </Link>
+                    </Box>
                     {profile}
                 </Toolbar>
             </AppBar>

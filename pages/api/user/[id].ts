@@ -1,6 +1,6 @@
 import { NextApiHandler } from "next";
 
-var data =[
+var data = [[
   {
       id: 1,
       name: 'Campaign 1',
@@ -29,12 +29,13 @@ var data =[
           { id: 6, name: 'Sainsburys', isIncluded: false },
       ],
   },
-]
+]]
 
 
 const user: NextApiHandler = (req, res) => {
   const { id } = req.query;
-  const userData = data;
+  debugger;
+  const userData = typeof id === "string" ? data[Number(id)-1] : data[0];
 
   if (userData) {
     res.status(200).json(userData);

@@ -24,7 +24,7 @@ function Settings() {
     const [expanded, setExpanded] = useState('')
     const [state, setState] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
-    const result = useSWR(`/api/user/1`, fetcher)
+    const result = useSWR(`/api/settings/1`, fetcher)
     const data = result.data
 
     const handleChange = (event: any) => {

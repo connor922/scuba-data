@@ -25,7 +25,7 @@ function Settings() {
     const [state, setState] = useState<any[]>([])
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
-    const result = useSWR(`/api/user/1`, fetcher)
+    const result = useSWR(`/api/settings/1`, fetcher);
     const data = result.data
 
     const handleClickOpen = () => {
@@ -53,32 +53,15 @@ function Settings() {
             <CampaignModal
                 isOpen={isOpen}
                 handleClose={handleClose}
-                onSubmit={(name: any) => {
+                onSubmit={() => {
                     handleClose()
-                    setState((prevstate: any) => {
-                        return [
-                            {
-                                id: prevstate.length + 1,
-                                name: name,
-                                state: 'LIVE',
-                                seniorites: [],
-                                keywords: [],
-                                companysList: [],
-                                jobTitles: [],
-                            },
-                            ...prevstate,
-                        ]
-                    })
                 }}
             />
             <CssBaseline />
             <Wrapper pageName={'Settings'} />
             <Box
                 sx={{
-                    backgroundColor: (theme) =>
-                        theme.palette.mode === 'light'
-                            ? theme.palette.grey[100]
-                            : theme.palette.grey[900],
+                    backgroundColor: "grey",
                     flexGrow: 1,
                     height: '100vh',
                     overflow: 'auto',

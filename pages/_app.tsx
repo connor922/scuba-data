@@ -14,15 +14,13 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 export default MyApp
 
-
-
 /*
-
-some sort of database
-payment testing
-send and return data from backend
-
-
-
-
+2) tidy up the stucture to not be so deeply nest for the campaigns
+3) archieve button should be seperate from the trio toggle
+4) archieved should be disabled version 
+5) on keydown add
+6) save changes button for campaign
+7) payment testing
+8) some sort of database
+9) send and return data from backend
 */

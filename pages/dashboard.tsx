@@ -14,26 +14,27 @@ import { usePapaParse } from 'react-papaparse'
 import Modal from '../components/Modal/Modal'
 import Wrapper from '../components/Wrapper/Wrapper'
 import useUser from '../data/use-user'
+import CircularProgress from '@mui/material/CircularProgress'
+import useSWR, {useSWRConfig} from 'swr'
 
-const initialCards: any = [
-    {
-        name: 'Example upload',
-        errorCount: '24 errors',
-        rowCount: '223 rows',
-        file: `Column 1,Column 2,Column 3,Column 4
-      1-1,1-2,1-3,1-4
-      2-1,2-2,2-3,2-4
-      3-1,3-2,3-3,3-4
-      4,5,6,7`,
-    },
-]
+const fetcher = async (url: string) => {
+    const res = await fetch(url)
+    if (!res.ok) {
+        throw Error("Yo that's NOT OK!!!")
+    }
+    const data = await res.json()
+    return data
+}
 
 function DashboardContent() {
     const [isOpen, setIsOpen] = useState(false)
-    const [cards, setCards] = useState(initialCards)
+    const [cards, setCards] = useState<any[]>([])
     const { jsonToCSV } = usePapaParse()
-
-    const { user, loading, loggedOut, mutate } = useUser()
+    const { user, loading, loggedOut } = useUser()
+    const { mutate } = useSWRConfig()
+    const [isLoading, setIsLoading] = useState(true)
+    const result = useSWR(`/api/dashboard/1`, fetcher)
+    const data = result.data
 
     const handleClickOpen = () => {
         setIsOpen(true)
@@ -47,6 +48,13 @@ function DashboardContent() {
             Router.replace('/')
         }
     }, [loggedOut])
+
+    useEffect(() => {
+        if (data) {
+            setCards(data)
+            setIsLoading(false)
+        }
+    }, [data])
 
     if (loggedOut) return 'redirecting...'
 
@@ -74,7 +82,7 @@ function DashboardContent() {
                     <Modal
                         isOpen={isOpen}
                         handleClose={handleClose}
-                        processfile={(data: any) => {
+                        processfile={async (data: any) => {
                             const a = data.map((array: any) => {
                                 const b: any = {}
 
@@ -92,141 +100,173 @@ function DashboardContent() {
 
                             handleClose()
 
-                            setCards((prevState: any) => {
-                                return [
-                                    {
-                                        name: data[0][0],
-                                        errorCount: `${data.length} errors`,
-                                        rowCount: `${data.length} errors`,
-                                        file: file,
-                                    },
-                                    ...prevState,
-                                ]
-                            })
+                            const newTodo =  {
+                                name: data[0][0],
+                                errorCount: `${data.length} errors`,
+                                rowCount: `${data.length} errors`,
+                                file: file,
+                            };
+                
+                            try {
+                                await mutate("/api/dashboard/1", async (todos:any) => {
+                                    const updatedTodo = await fetch('/api/dashboard/1', {
+                                      method: 'POST',
+                                      headers: new Headers({
+                                        'Content-Type': 'application/json',
+                                        Accept: 'application/json',
+                                      }),
+                                      body: JSON.stringify(newTodo)
+                                    })
+                                  
+                                    return [...todos, newTodo]
+                                  })
+
+                              
+                            } catch (e) {
+                              console.log("shizz")
+                            }
                         }}
                     />
 
-                    <Paper
-                        sx={{
-                            p: 2,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            height: '100%',
-                            width: '100%',
-                            marginTop: 2,
-                            minHeight: '60vh',
-                        }}
-                    >
-                        {cards.map((cards: any, index: any) => {
-                            const { errorCount, name, rowCount, file } = cards
-                            return (
-                                <Card key={index} sx={{ mb: '2rem' }}>
-                                    <CardContent
-                                        sx={{
-                                            display: 'flex',
-                                            gap: '1rem',
-                                            justifyContent: 'space-between',
-                                        }}
-                                    >
-                                        <Typography
-                                            variant={'h6'}
+                    {!isLoading ? (
+                        <Paper
+                            sx={{
+                                p: 2,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                height: '100%',
+                                width: '100%',
+                                marginTop: 2,
+                                minHeight: '60vh',
+                            }}
+                        >
+                            {cards.map((cards: any, index: any) => {
+                                const { errorCount, name, rowCount, file } =
+                                    cards
+                                return (
+                                    <Card key={index} sx={{ mb: '2rem' }}>
+                                        <CardContent
                                             sx={{
-                                                flex: '1 1 0px',
-                                                fontWeight: 'bold',
-                                                lineHeight: 2,
-                                            }}
-                                        >
-                                            {name}
-                                        </Typography>
-                                        <Typography
-                                            variant={'h6'}
-                                            sx={{
-                                                flex: '1 1 0px',
-                                                lineHeight: 2,
-                                            }}
-                                        >
-                                            {rowCount}
-                                        </Typography>
-                                        <Typography
-                                            variant={'h6'}
-                                            sx={{
-                                                flex: '1 1 0px',
-                                                color: 'darkRed',
-                                                lineHeight: 2,
-                                            }}
-                                        >
-                                            {errorCount}
-                                        </Typography>
-                                        <div
-                                            style={{
                                                 display: 'flex',
-                                                gap: '5px',
-                                                flex: '1 1 0px',
+                                                gap: '1rem',
+                                                justifyContent: 'space-between',
                                             }}
                                         >
-                                            <Avatar
+                                            <Typography
+                                                variant={'h6'}
                                                 sx={{
-                                                    bgcolor: 'green',
-                                                    fontSize: '0.95rem',
-                                                    paddingLeft: '5px',
-                                                    paddingTop: '2px',
+                                                    flex: '1 1 0px',
+                                                    fontWeight: 'bold',
+                                                    lineHeight: 2,
                                                 }}
                                             >
-                                                20%
-                                            </Avatar>
-                                            <Avatar
+                                                {name}
+                                            </Typography>
+                                            <Typography
+                                                variant={'h6'}
                                                 sx={{
-                                                    bgcolor: 'orange',
-                                                    fontSize: '0.95rem',
-                                                    paddingLeft: '5px',
-                                                    paddingTop: '2px',
+                                                    flex: '1 1 0px',
+                                                    lineHeight: 2,
                                                 }}
                                             >
-                                                40%
-                                            </Avatar>
-                                            <Avatar
+                                                {rowCount}
+                                            </Typography>
+                                            <Typography
+                                                variant={'h6'}
                                                 sx={{
-                                                    bgcolor: 'crimson',
-                                                    fontSize: '0.95rem',
-                                                    paddingLeft: '5px',
-                                                    paddingTop: '2px',
+                                                    flex: '1 1 0px',
+                                                    color: 'darkRed',
+                                                    lineHeight: 2,
                                                 }}
                                             >
-                                                40%
-                                            </Avatar>
-                                        </div>
-                                        <Button
-                                            variant="outlined"
-                                            sx={{
-                                                color: 'blue',
-                                                flex: '1 1 0px',
-                                            }}
-                                            onClick={() => {
-                                                var csvData = new Blob([file], {
-                                                    type: 'text/csv;charset=utf-8;',
-                                                })
-                                                var csvURL =
-                                                    window.URL.createObjectURL(
-                                                        csvData
+                                                {errorCount}
+                                            </Typography>
+                                            <div
+                                                style={{
+                                                    display: 'flex',
+                                                    gap: '5px',
+                                                    flex: '1 1 0px',
+                                                }}
+                                            >
+                                                <Avatar
+                                                    sx={{
+                                                        bgcolor: 'green',
+                                                        fontSize: '0.95rem',
+                                                        paddingLeft: '5px',
+                                                        paddingTop: '2px',
+                                                    }}
+                                                >
+                                                    20%
+                                                </Avatar>
+                                                <Avatar
+                                                    sx={{
+                                                        bgcolor: 'orange',
+                                                        fontSize: '0.95rem',
+                                                        paddingLeft: '5px',
+                                                        paddingTop: '2px',
+                                                    }}
+                                                >
+                                                    40%
+                                                </Avatar>
+                                                <Avatar
+                                                    sx={{
+                                                        bgcolor: 'crimson',
+                                                        fontSize: '0.95rem',
+                                                        paddingLeft: '5px',
+                                                        paddingTop: '2px',
+                                                    }}
+                                                >
+                                                    40%
+                                                </Avatar>
+                                            </div>
+                                            <Button
+                                                variant="outlined"
+                                                sx={{
+                                                    color: 'blue',
+                                                    flex: '1 1 0px',
+                                                }}
+                                                onClick={() => {
+                                                    var csvData = new Blob(
+                                                        [file],
+                                                        {
+                                                            type: 'text/csv;charset=utf-8;',
+                                                        }
                                                     )
+                                                    var csvURL =
+                                                        window.URL.createObjectURL(
+                                                            csvData
+                                                        )
 
-                                                var tempLink =
-                                                    document.createElement('a')
-                                                tempLink.href = csvURL
-                                                tempLink.setAttribute(
-                                                    'download',
-                                                    'download.csv'
-                                                )
-                                                tempLink.click()
-                                            }}
-                                        >
-                                            Export
-                                        </Button>
-                                    </CardContent>
-                                </Card>
-                            )
-                        })}
-                    </Paper>
+                                                    var tempLink =
+                                                        document.createElement(
+                                                            'a'
+                                                        )
+                                                    tempLink.href = csvURL
+                                                    tempLink.setAttribute(
+                                                        'download',
+                                                        'download.csv'
+                                                    )
+                                                    tempLink.click()
+                                                }}
+                                            >
+                                                Export
+                                            </Button>
+                                        </CardContent>
+                                    </Card>
+                                )
+                            })}
+                        </Paper>
+                    ) : (
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                width: '100%',
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <CircularProgress />
+                        </Box>
+                    )}
                 </Box>
             </Box>
         </Box>

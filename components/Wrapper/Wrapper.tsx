@@ -135,35 +135,39 @@ export default function Wrapper({ pageName }: any) {
                         display: 'flex',
                         justifyContent: 'space-between',
                     }}
-                >   <Box sx={{display:"flex"}}>
-                    <IconButton
-                        edge="start"
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={toggleDrawer}
-                        sx={{
-                            marginRight: '36px',
-                            ...(open && { display: 'none' }),
-                        }}
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                    <Link href="/" sx={{ color: '#FFFFFF' }}>
-                        <Typography
-                            component="h1"
-                            variant="h6"
+                >
+                    {' '}
+                    <Box sx={{ display: 'flex' }}>
+                        <IconButton
+                            edge="start"
                             color="inherit"
-                            noWrap
-                            sx={{ flexGrow: 1, color: '#FFFFFF' }}
+                            aria-label="open drawer"
+                            onClick={toggleDrawer}
+                            sx={{
+                                marginRight: '36px',
+                                ...(open && { display: 'none' }),
+                            }}
                         >
-                            <IconButton
+                            <MenuIcon />
+                        </IconButton>
+                        <Link href="/" sx={{ color: '#FFFFFF' }}>
+                            <Typography
+                                component="h1"
+                                variant="h6"
                                 color="inherit"
-                                sx={{ color: '#FFFFFF' }}
+                                noWrap
+                                sx={{ flexGrow: 1, color: '#FFFFFF' }}
                             >
-                                <ScubaDivingIcon sx={{ color: '#FFFFFF' }} />
-                            </IconButton>
-                        </Typography>
-                    </Link>
+                                <IconButton
+                                    color="inherit"
+                                    sx={{ color: '#FFFFFF' }}
+                                >
+                                    <ScubaDivingIcon
+                                        sx={{ color: '#FFFFFF' }}
+                                    />
+                                </IconButton>
+                            </Typography>
+                        </Link>
                     </Box>
                     {profile}
                 </Toolbar>

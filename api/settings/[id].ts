@@ -48,7 +48,7 @@ var data = [
 
 const user: NextApiHandler = (req, res) => {
     const { id } = req.query
-
+    console.log("hi")
     if (req.method === 'POST') {
         data[Number(id) - 1].push(req.body)
         res.status(200).json(data[Number(id) - 1])

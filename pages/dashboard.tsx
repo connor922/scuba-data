@@ -17,6 +17,8 @@ import useUser from '../data/use-user'
 import CircularProgress from '@mui/material/CircularProgress'
 import useSWR, { useSWRConfig } from 'swr'
 
+const baseURL = process.env.NEXT_PUBLIC_FUNCTIONS_BASE_URL;
+
 const fetcher = async (url: string) => {
     const res = await fetch(url)
     if (!res.ok) {
@@ -83,6 +85,21 @@ function DashboardContent() {
                         isOpen={isOpen}
                         handleClose={handleClose}
                         processfile={async (data: any) => {
+                            const fomattedData = await fetch(
+                                baseURL + "/api/updatedata",
+                                {
+                                    method: 'POST',
+                                    headers: new Headers({
+                                        'Content-Type':
+                                            'application/json',
+                                        Accept: 'application/json',
+                                    }),
+                                    body: JSON.stringify(data),
+                                }
+                            )
+                            
+                            const datad = await fomattedData.json()
+                            console.log(datad)
                             const a = data.map((array: any) => {
                                 const b: any = {}
 

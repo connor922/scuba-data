@@ -25,7 +25,7 @@ function Settings() {
     const [state, setState] = useState<any[]>([])
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
-    const result = useSWR(`/api/settings/1`, fetcher);
+    const result = useSWR(`/api/settings/1`, fetcher)
     const data = result.data
 
     const handleClickOpen = () => {
@@ -61,7 +61,7 @@ function Settings() {
             <Wrapper pageName={'Settings'} />
             <Box
                 sx={{
-                    backgroundColor: "grey",
+                    backgroundColor: 'grey',
                     flexGrow: 1,
                     height: '100vh',
                     overflow: 'auto',

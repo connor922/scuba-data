@@ -85,6 +85,89 @@ function List({
         })
 }
 
+function Item({ label, setState, items, id, listName }: any) {
+    const [senority, setSenority] = useState('')
+
+    return (
+        <Box
+            sx={{
+                display: 'flex',
+                gap: '1rem',
+                flexDirection: 'column',
+            }}
+        >
+            <Typography sx={{ fontWeight: 600, mt: '1rem' }}>
+                {label}
+            </Typography>
+            <div style={{ display: 'flex' }}>
+                <TextField
+                    id="standard-basic"
+                    placeholder="Position in company"
+                    variant="standard"
+                    value={senority}
+                    onChange={(event) => {
+                        setSenority(event.target.value)
+                    }}
+                />
+                <Button
+                    onClick={() => {
+                        setState((prevstate: any) => {
+                            return prevstate.map((long: any) => {
+                                let data = {
+                                    ...long,
+                                }
+
+                                if (long.id === id) {
+                                    data = {
+                                        ...data,
+                                        [listName]: [
+                                            ...data[listName],
+                                            {
+                                                id: data[listName].length,
+                                                name: senority,
+                                                isIncluded: true,
+                                            },
+                                        ],
+                                    }
+                                }
+
+                                return data
+                            })
+                        })
+                    }}
+                >
+                    Add
+                </Button>
+            </div>
+            <div
+                style={{
+                    display: 'flex',
+                    gap: '1rem',
+                    flexWrap: 'wrap',
+                }}
+            >
+                <List
+                    items={items}
+                    filterProp="isIncluded"
+                    newState={true}
+                    listName={listName}
+                    setState={setState}
+                    id={id}
+                    colour="green"
+                />
+                <List
+                    items={items}
+                    filterProp="isIncluded"
+                    newState={false}
+                    listName={listName}
+                    setState={setState}
+                    id={id}
+                    colour="crimson"
+                />
+            </div>
+        </Box>
+    )
+}
 export default function HorizontalLinearStepper({
     isExpanded,
     handleChange,
@@ -97,7 +180,6 @@ export default function HorizontalLinearStepper({
     companysList,
     jobTitles,
 }: any) {
-    const [senority, setSenority] = useState('')
     const [companyList, setCompanyList] = useState('')
     const [jobTitle, setJobTitle] = useState('')
     const [keyword, setKeyword] = useState('')
@@ -171,84 +253,13 @@ export default function HorizontalLinearStepper({
                         justifyContent: 'space-between',
                     }}
                 >
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            gap: '1rem',
-                            flexDirection: 'column',
-                        }}
-                    >
-                        <Typography sx={{ fontWeight: 600, mt: '1rem' }}>
-                            Seniorites
-                        </Typography>
-                        <div style={{ display: 'flex' }}>
-                            <TextField
-                                id="standard-basic"
-                                placeholder="Position in company"
-                                variant="standard"
-                                value={senority}
-                                onChange={(event) => {
-                                    setSenority(event.target.value)
-                                }}
-                            />
-                            <Button
-                                onClick={() => {
-                                    setState((prevstate: any) => {
-                                        return prevstate.map((long: any) => {
-                                            let data = {
-                                                ...long,
-                                            }
-
-                                            if (long.id === id) {
-                                                data = {
-                                                    ...data,
-                                                    seniorites: [
-                                                        ...data.seniorites,
-                                                        {
-                                                            id: data.seniorites
-                                                                .length,
-                                                            name: senority,
-                                                            isIncluded: true,
-                                                        },
-                                                    ],
-                                                }
-                                            }
-
-                                            return data
-                                        })
-                                    })
-                                }}
-                            >
-                                Add
-                            </Button>
-                        </div>
-                        <div
-                            style={{
-                                display: 'flex',
-                                gap: '1rem',
-                                flexWrap: 'wrap',
-                            }}
-                        >
-                            <List
-                                items={seniorites}
-                                filterProp="isIncluded"
-                                newState={true}
-                                listName={'seniorites'}
-                                setState={setState}
-                                id={id}
-                                colour="green"
-                            />
-                            <List
-                                items={seniorites}
-                                filterProp="isIncluded"
-                                newState={false}
-                                listName={'seniorites'}
-                                setState={setState}
-                                id={id}
-                                colour="crimson"
-                            />
-                        </div>
-                    </Box>
+                    <List
+                        label="Seniorites"
+                        setState={setState}
+                        items={seniorites}
+                        id={id}
+                        listName="seniorites"
+                    />
                     <Box
                         sx={{
                             display: 'flex',

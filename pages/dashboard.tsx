@@ -15,7 +15,7 @@ import Modal from '../components/Modal/Modal'
 import Wrapper from '../components/Wrapper/Wrapper'
 import useUser from '../data/use-user'
 import CircularProgress from '@mui/material/CircularProgress'
-import useSWR, {useSWRConfig} from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 
 const fetcher = async (url: string) => {
     const res = await fetch(url)
@@ -100,30 +100,35 @@ function DashboardContent() {
 
                             handleClose()
 
-                            const newTodo =  {
+                            const newTodo = {
                                 name: data[0][0],
                                 errorCount: `${data.length} errors`,
                                 rowCount: `${data.length} errors`,
                                 file: file,
-                            };
-                
-                            try {
-                                await mutate("/api/dashboard/1", async (todos:any) => {
-                                    const updatedTodo = await fetch('/api/dashboard/1', {
-                                      method: 'POST',
-                                      headers: new Headers({
-                                        'Content-Type': 'application/json',
-                                        Accept: 'application/json',
-                                      }),
-                                      body: JSON.stringify(newTodo)
-                                    })
-                                  
-                                    return [...todos, newTodo]
-                                  })
+                            }
 
-                              
+                            try {
+                                await mutate(
+                                    '/api/dashboard/1',
+                                    async (todos: any) => {
+                                        const updatedTodo = await fetch(
+                                            '/api/dashboard/1',
+                                            {
+                                                method: 'POST',
+                                                headers: new Headers({
+                                                    'Content-Type':
+                                                        'application/json',
+                                                    Accept: 'application/json',
+                                                }),
+                                                body: JSON.stringify(newTodo),
+                                            }
+                                        )
+
+                                        return [...todos, newTodo]
+                                    }
+                                )
                             } catch (e) {
-                              console.log("shizz")
+                                console.log('shizz')
                             }
                         }}
                     />

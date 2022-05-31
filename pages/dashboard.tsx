@@ -86,7 +86,7 @@ function DashboardContent() {
                         handleClose={handleClose}
                         processfile={async (data: any) => {
                             const fomattedData = await fetch(
-                                baseURL + "/api/updatedata",
+                                baseURL?baseURL+'/':'' + "api/updatedata",
                                 {
                                     method: 'POST',
                                     headers: new Headers({

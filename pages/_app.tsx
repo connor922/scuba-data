@@ -23,7 +23,6 @@ today
 tommorrow 
 
 2) tidy up the stucture to not be so deeply nest for the campaigns
-3) archieve button should be seperate from the trio toggle
 4) archieved should be disabled version 
 
 fun

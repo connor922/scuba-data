@@ -27,22 +27,6 @@ def text_to_vector(text):
 
 class handler(BaseHTTPRequestHandler):
 
-    def do_GET(self):
-        text1 = "This is a foo bar sentence ."
-        text2 = "This sentence is similar to a foo bar sentence ."
-
-        vector1 = text_to_vector(text1)
-        vector2 = text_to_vector(text2)
-
-        cosine = get_cosine(vector1, vector2)
-
-        print("Cosine:", cosine)
-        self.send_response(200)
-        self.send_header('Content-type', 'text/plain')
-        self.end_headers()
-        self.wfile.write(cosine)
-        return
-
     def do_POST(self):
         text1 = "This is a foo bar sentence ."
         text2 = "This sentence is similar to a foo bar sentence ."
@@ -52,11 +36,6 @@ class handler(BaseHTTPRequestHandler):
 
         cosine = get_cosine(vector1, vector2)
 
-        content_len = int(self.headers.get('Content-Length'))
-        post_body = self.rfile.read(content_len)
-
-        print(post_body)
-        print("Cosine:", cosine)
         self.send_response(200)
         self.send_header('Content-type', 'text/plain')
         self.end_headers()

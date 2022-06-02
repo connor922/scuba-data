@@ -98,8 +98,8 @@ function DashboardContent() {
                         isOpen={isOpen}
                         handleClose={handleClose}
                         processfile={async ({data:newData, campaigns}: any) => {
-                            /*const fomattedData = await fetch(
-                                baseURL?baseURL+'/':'' + "api/updatedata",
+                            const fomattedData = await fetch(
+                                (baseURL? baseURL+'/':'' )+ "api/updatedata",
                                 {
                                     method: 'POST',
                                     headers: new Headers({
@@ -111,33 +111,28 @@ function DashboardContent() {
                                 }
                             )
                             
-                            const datad = await fomattedData.json()
-                            console.log(datad)
-                            */
+                            const score = await fomattedData.json()
 
-                            const a = newData.map((array: any) => {
-                                const b: any = {}
-
-                                array.forEach((element: any, index: any) => {
-                                    b[`column ${index}`] = element
-                                        .split('')
-                                        .reverse()
-                                        .join('')
-                                })
-
-                                return b
-                            })
-
-                            const file = jsonToCSV(a)
-
+                            console.log(score)
                             handleClose()
 
                             const newTodo = {
                                 user:profile?.id,
                                 name: newData[0][0],
-                                error_count: newData.length,
+                                error_count: 5,
                                 row_count: newData.length,
-                                file: file,
+                                file: jsonToCSV(newData.map((array: any) => {
+                                    const b: any = {}
+    
+                                    array.forEach((element: any, index: any) => {
+                                        b[`column ${index}`] = element
+                                            .split('')
+                                            .reverse()
+                                            .join('')
+                                    })
+    
+                                    return b
+                                })),
                                 campaigns:campaigns
                             }
 

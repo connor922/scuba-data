@@ -7,8 +7,6 @@ const user: NextApiHandler = async(req, res) => {
     if (req.method === 'POST') {
         // probs do some validation on this?? 
         const { data, error } = await supabase.from("results").upsert(req.body)
-        console.log(data);
-        console.log(error);
         res.status(200).json(data)
         return
     }

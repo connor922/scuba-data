@@ -1,13 +1,8 @@
-import '../styles/globals.css'
-import type { AppProps } from 'next/app'
-import { createTheme, styled, ThemeProvider } from '@mui/material/styles'
-import { supabase } from "../libs/initSupabase";
-import { User } from '@supabase/supabase-js';
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import type { AppProps } from 'next/app';
+import '../styles/globals.css';
 
 
-const allowedPages = ['/', 'sign-up']
 const mdTheme = createTheme()
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -34,28 +29,3 @@ export default MyApp
 8) 
 9) 
 */
-
-    // const [user, setUser] = useState<User | null>();
-    // const router = useRouter()
-
-    // useEffect(() => {
-    //     if(!user && router.pathname !== "/"){
-
-    //     const getProfile = () => {
-    //       const profile = supabase.auth.user();
-    
-    //       if (profile) {
-    //         setUser(profile);
-    //       } else {
-    //         router.push('/');
-    //       }
-    //     };
-    
-    //         getProfile();
-    //     }
-    // }, []);
-    
-    // if (!user && router.pathname !== "/" ) {
-    //     // Currently loading asynchronously User Supabase Information
-    //     return null;
-    // }

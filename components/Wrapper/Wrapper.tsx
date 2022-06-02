@@ -117,23 +117,6 @@ export default function Wrapper({ pageName }: any) {
         }
       };
 
-    const user = supabase.auth.user();
-
-    let profile = null
-
-    
-
-    if (user) {
-        profile = (
-            <IconButton
-                edge="start"
-                color="inherit"
-                onClick={handleLogOut}
-            >
-                <LogoutIcon />
-            </IconButton>
-        )
-    }
     return (
         <>
             <AppBar position="absolute" open={open}>
@@ -177,7 +160,13 @@ export default function Wrapper({ pageName }: any) {
                             </Typography>
                         </Link>
                     </Box>
-                    {profile}
+                    <IconButton
+                edge="start"
+                color="inherit"
+                onClick={handleLogOut}
+            >
+                <LogoutIcon />
+            </IconButton>
                 </Toolbar>
             </AppBar>
             <Drawer variant="permanent" open={open}>

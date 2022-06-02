@@ -73,10 +73,6 @@ function DashboardContent() {
         }
     }, [data])
 
-    if (!profile){
-        return <Box sx={{ display: 'flexBox' }}>redirecting...</Box>
-    } 
-
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
@@ -137,7 +133,7 @@ function DashboardContent() {
                             handleClose()
 
                             const newTodo = {
-                                user:profile.id,
+                                user:profile?.id,
                                 name: newData[0][0],
                                 error_count: newData.length,
                                 row_count: newData.length,

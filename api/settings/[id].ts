@@ -19,8 +19,6 @@ const user: NextApiHandler = async (req, res) => {
         }
 
         const { data, error } = await supabase.from("campaigns").upsert(updates)
-        console.log(data);
-        console.log(error);
         res.status(200).json(data)
         return
     }
@@ -28,27 +26,23 @@ const user: NextApiHandler = async (req, res) => {
     if(id){
         const { data, error } = await supabase.from("campaigns").select("*").eq('user', id);
 
-        console.log(data);
-
-    console.log(error);
-    if (data) {
-        const aa = data.map((campaign:any)=>{
-            return {
-                id: campaign.id,
-                name: campaign.name,
-                state: campaign.state,
-                seniorites: JSON.parse(campaign.seniorites),
-                keywords: JSON.parse(campaign.keywords),
-                companysList: JSON.parse(campaign.companys_list),
-                jobTitles: JSON.parse(campaign.job_titles),
-                user:id
-            }
-        })
-        console.log(aa);
-        res.status(200).json(aa)
-    } else {
-        res.status(404).end()
-    }
+        if (data) {
+            const aa = data.map((campaign:any)=>{
+                return {
+                    id: campaign.id,
+                    name: campaign.name,
+                    state: campaign.state,
+                    seniorites: JSON.parse(campaign.seniorites),
+                    keywords: JSON.parse(campaign.keywords),
+                    companysList: JSON.parse(campaign.companys_list),
+                    jobTitles: JSON.parse(campaign.job_titles),
+                    user:id
+                }
+            })
+            res.status(200).json(aa)
+        } else {
+            res.status(404).end()
+        }
     }
     res.status(404).end()
 }

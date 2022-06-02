@@ -139,7 +139,7 @@ function Settings() {
                                         companysList={item.companysList}
                                         jobTitles={item.jobTitles}
                                         isExpanded={
-                                            expanded == item.id.toString()
+                                            expanded == item.id?.toString()
                                         }
                                         id={item.id}
                                         handleChange={handleChange}

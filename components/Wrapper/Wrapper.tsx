@@ -19,8 +19,8 @@ import ListItemText from '@mui/material/ListItemText'
 import { styled } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import { Fragment, useState } from 'react'
-import useUser from '../../data/use-user'
-import { logout } from '../../libs/auth'
+import { supabase } from "../../libs/initSupabase";
+import { useRouter } from 'next/router'
 
 const drawerWidth = 240
 
@@ -99,33 +99,41 @@ export const secondaryListItems = (
 
 export default function Wrapper({ pageName }: any) {
     const [open, setOpen] = useState(false)
+    const router = useRouter();
 
     const toggleDrawer = () => {
         setOpen(!open)
     }
 
-    const { user, loading, mutate } = useUser()
+    const handleLogOut = async (e:any) => {
+        e.preventDefault();
+    
+        const { error } = await supabase.auth.signOut();
+    
+        if (error) {
+          alert(JSON.stringify(error));
+        } else {
+          router.push('/');
+        }
+      };
+
+    const user = supabase.auth.user();
 
     let profile = null
-    if (loading) {
-        profile = 'loading...'
-    }
+
+    
 
     if (user) {
         profile = (
             <IconButton
                 edge="start"
                 color="inherit"
-                onClick={() => {
-                    logout()
-                    mutate()
-                }}
+                onClick={handleLogOut}
             >
                 <LogoutIcon />
             </IconButton>
         )
     }
-
     return (
         <>
             <AppBar position="absolute" open={open}>

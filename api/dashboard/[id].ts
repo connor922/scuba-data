@@ -13,13 +13,16 @@ const user: NextApiHandler = async(req, res) => {
         return
     }
 
-    const { data, error } = await supabase.from("results").select("*").eq('user', id);
+    if(id){
+        const { data, error } = await supabase.from("results").select("*").eq('user', id);
 
-    if (data) {
-        res.status(200).json(data)
-    } else {
-        res.status(404).end()
+        if (data) {
+            res.status(200).json(data)
+        } else {
+            res.status(404).end()
+        }
     }
+    res.status(404).end()
 }
 
 export default user

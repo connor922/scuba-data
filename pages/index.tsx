@@ -12,29 +12,38 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import * as React from 'react'
-import useUser from '../data/use-user'
-import { login } from '../libs/auth'
+import { useState } from 'react'
+import { supabase } from "../libs/initSupabase";
+
 
 export default function SignInSide() {
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-        const data = new FormData(event.currentTarget)
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        })
+    const router = useRouter();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+  
+    const handleSignIn = async (e: React.FormEvent) => {
+      e.preventDefault();
+  
+      const { error } = await supabase.auth.signIn({
+        email,
+        password,
+      });
+  
+      if (error) {
+        alert(JSON.stringify(error));
+      } else {
+        router.push('/dashboard');
+      }
+    };
+
+
+    const profile = supabase.auth.user();
+    
+    if (profile) {
+        router.push('/dashboard');
+    
+    
     }
-
-    const router = useRouter()
-
-    const { user, mutate, loggedOut } = useUser()
-
-    // if logged in, redirect to the dashboard
-    React.useEffect(() => {
-        if (user && !loggedOut) {
-            router.replace('/dashboard')
-        }
-    }, [user, loggedOut])
 
     return (
         <Grid container component="main" sx={{ height: '100vh' }}>
@@ -95,7 +104,7 @@ export default function SignInSide() {
                     <Box
                         component="form"
                         noValidate
-                        onSubmit={handleSubmit}
+                        onSubmit={handleSignIn}
                         sx={{ mt: 1 }}
                     >
                         <TextField
@@ -107,6 +116,10 @@ export default function SignInSide() {
                             name="email"
                             autoComplete="email"
                             autoFocus
+                            value={email}
+                            onChange={(event:any)=>{
+                                setEmail(event?.target.value)
+                            }}
                         />
                         <TextField
                             margin="normal"
@@ -117,6 +130,10 @@ export default function SignInSide() {
                             type="password"
                             id="password"
                             autoComplete="current-password"
+                            value={password}
+                            onChange={(event:any)=>{
+                                setPassword(event?.target.value)
+                            }}
                         />
                         <FormControlLabel
                             control={
@@ -134,14 +151,26 @@ export default function SignInSide() {
                                 fullWidth
                                 variant="contained"
                                 sx={{ mt: 3, mb: 2 }}
-                                onClick={() => {
-                                    login()
-                                    mutate()
-                                }}
+                                onClick={handleSignIn}
                             >
                                 Sign In
                             </Button>
                         </Link>
+                        <Link href="/sign-up">
+                            <Button
+                                variant="contained"
+                                component="h1"
+                                fullWidth
+
+                            >
+                                Create Account
+                            </Button>
+                        </Link>
+
+                        <br/><br/><br/>
+                        Test User <br/>
+                        User: conanmalanaphy@gmail.com <br/>
+                        Password: conan1 <br/>
                     </Box>
                 </Box>
             </Grid>

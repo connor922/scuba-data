@@ -9,7 +9,7 @@ import Wrapper from '../components/Wrapper/Wrapper'
 import Accord from '../components/Accord/Accord'
 import CircularProgress from '@mui/material/CircularProgress'
 import { useSWRConfig } from 'swr'
-
+import { supabase } from "../libs/initSupabase";
 import useSWR from 'swr'
 
 const fetcher = async (url: string) => {
@@ -23,7 +23,7 @@ const fetcher = async (url: string) => {
 
 const updateFn = async (newData: any) => {
     await fetch(
-        "/api/settings/1",
+        `/api/settings/${newData.user}`,
         {
             method: 'POST',
             headers: new Headers({
@@ -41,7 +41,9 @@ function Settings() {
     const [state, setState] = useState<any[]>([])
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
-    const result = useSWR(`/api/settings/1`, fetcher)
+    const profile = supabase.auth.user();
+
+    const result = useSWR(`/api/settings/${profile?.id}`, fetcher)
     const data = result.data
 
     const { mutate } = useSWRConfig()
@@ -81,10 +83,10 @@ function Settings() {
                         keywords: [],
                         companysList: [],
                         jobTitles: [],
-                        user:1
+                        user:profile?.id
                     }
 
-                    mutate('/api/settings/1', updateFn(newTodo), { optimisticData: [...data, newTodo], rollbackOnError: true });
+                    mutate(`/api/settings/${profile?.id}`, updateFn(newTodo), { optimisticData: [...data, newTodo], rollbackOnError: true });
 
                     handleClose()
                 }}

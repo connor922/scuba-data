@@ -25,8 +25,10 @@ const user: NextApiHandler = async (req, res) => {
         return
     }
 
-    const { data, error } = await supabase.from("campaigns").select("*").eq('user', id);
-    console.log(data);
+    if(id){
+        const { data, error } = await supabase.from("campaigns").select("*").eq('user', id);
+
+        console.log(data);
 
     console.log(error);
     if (data) {
@@ -39,6 +41,7 @@ const user: NextApiHandler = async (req, res) => {
                 keywords: JSON.parse(campaign.keywords),
                 companysList: JSON.parse(campaign.companys_list),
                 jobTitles: JSON.parse(campaign.job_titles),
+                user:id
             }
         })
         console.log(aa);
@@ -46,6 +49,8 @@ const user: NextApiHandler = async (req, res) => {
     } else {
         res.status(404).end()
     }
+    }
+    res.status(404).end()
 }
 
 export default user

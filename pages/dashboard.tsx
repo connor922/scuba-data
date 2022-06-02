@@ -3,19 +3,18 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import Container from '@mui/material/Container'
 import CssBaseline from '@mui/material/CssBaseline'
 import Paper from '@mui/material/Paper'
 import Toolbar from '@mui/material/Toolbar'
-import Typography from '@mui/material/Typography'
 import Router from 'next/router'
+import Typography from '@mui/material/Typography'
 import { useEffect, useState } from 'react'
 import { usePapaParse } from 'react-papaparse'
 import Modal from '../components/Modal/Modal'
 import Wrapper from '../components/Wrapper/Wrapper'
-import useUser from '../data/use-user'
 import CircularProgress from '@mui/material/CircularProgress'
 import useSWR, { useSWRConfig } from 'swr'
+import { supabase } from "../libs/initSupabase";
 
 const baseURL = process.env.NEXT_PUBLIC_FUNCTIONS_BASE_URL;
 
@@ -48,10 +47,10 @@ function DashboardContent() {
     const [isOpen, setIsOpen] = useState(false)
     const [cards, setCards] = useState<any[]>([])
     const { jsonToCSV } = usePapaParse()
-    const { user, loading, loggedOut } = useUser()
     const { mutate } = useSWRConfig()
-    const [isLoading, setIsLoading] = useState(true)
-    const {data} = useSWR(`/api/dashboard/1`, fetcher);
+    const [isLoading, setIsLoading] = useState(true);
+    const profile = supabase.auth.user();
+    const {data} = useSWR(`/api/dashboard/${profile?.id}`, fetcher);
 
     const handleClickOpen = () => {
         setIsOpen(true)
@@ -60,11 +59,12 @@ function DashboardContent() {
         setIsOpen(false)
     }
 
+
     useEffect(() => {
-        if (loggedOut) {
+        if (!profile) {
             Router.replace('/')
         }
-    }, [loggedOut])
+    }, [profile])
 
     useEffect(() => {
         if (data) {
@@ -73,7 +73,9 @@ function DashboardContent() {
         }
     }, [data])
 
-    if (loggedOut) return 'redirecting...'
+    if (!profile){
+        return <Box sx={{ display: 'flexBox' }}>redirecting...</Box>
+    } 
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -116,7 +118,7 @@ function DashboardContent() {
                             const datad = await fomattedData.json()
                             console.log(datad)
                             */
-                           debugger;
+
                             const a = newData.map((array: any) => {
                                 const b: any = {}
 
@@ -135,7 +137,7 @@ function DashboardContent() {
                             handleClose()
 
                             const newTodo = {
-                                user:1,
+                                user:profile.id,
                                 name: newData[0][0],
                                 error_count: newData.length,
                                 row_count: newData.length,
@@ -143,7 +145,7 @@ function DashboardContent() {
                                 campaigns:campaigns
                             }
 
-                            mutate('/api/dashboard/1', updateFn(newTodo), { optimisticData: [...data, newTodo], rollbackOnError: true });
+                            mutate(`/api/dashboard/${profile?.id}`, updateFn(newTodo), { optimisticData: [...data, newTodo], rollbackOnError: true });
                         }}
                     />
 
@@ -293,10 +295,3 @@ function DashboardContent() {
 }
 
 export default DashboardContent
-
-
-/*
-
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4eXNncHp0dGd6cmhjbWN5ZXp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2NTQxMDc3MDIsImV4cCI6MTk2OTY4MzcwMn0._dxcNF4ShY1mpg2Dp4dU-uolkh8LEovuv9bc_gD0gnE
-
-*/

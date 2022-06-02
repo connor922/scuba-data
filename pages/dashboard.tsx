@@ -28,6 +28,22 @@ const fetcher = async (url: string) => {
     return data
 }
 
+
+const updateFn = async (newData: any) => {
+    await fetch(
+        "/api/dashboard/1",
+        {
+            method: 'POST',
+            headers: new Headers({
+                'Content-Type':
+                    'application/json',
+                Accept: 'application/json',
+            }),
+            body: JSON.stringify(newData),
+        }
+    )
+}
+
 function DashboardContent() {
     const [isOpen, setIsOpen] = useState(false)
     const [cards, setCards] = useState<any[]>([])
@@ -35,8 +51,7 @@ function DashboardContent() {
     const { user, loading, loggedOut } = useUser()
     const { mutate } = useSWRConfig()
     const [isLoading, setIsLoading] = useState(true)
-    const result = useSWR(`/api/dashboard/1`, fetcher)
-    const data = result.data
+    const {data} = useSWR(`/api/dashboard/1`, fetcher);
 
     const handleClickOpen = () => {
         setIsOpen(true)
@@ -84,8 +99,8 @@ function DashboardContent() {
                     <Modal
                         isOpen={isOpen}
                         handleClose={handleClose}
-                        processfile={async (data: any) => {
-                            const fomattedData = await fetch(
+                        processfile={async ({data:newData, campaigns}: any) => {
+                            /*const fomattedData = await fetch(
                                 baseURL?baseURL+'/':'' + "api/updatedata",
                                 {
                                     method: 'POST',
@@ -94,13 +109,15 @@ function DashboardContent() {
                                             'application/json',
                                         Accept: 'application/json',
                                     }),
-                                    body: JSON.stringify(data),
+                                    body: JSON.stringify(newData),
                                 }
                             )
                             
                             const datad = await fomattedData.json()
                             console.log(datad)
-                            const a = data.map((array: any) => {
+                            */
+                           debugger;
+                            const a = newData.map((array: any) => {
                                 const b: any = {}
 
                                 array.forEach((element: any, index: any) => {
@@ -118,35 +135,15 @@ function DashboardContent() {
                             handleClose()
 
                             const newTodo = {
-                                name: data[0][0],
-                                errorCount: `${data.length} errors`,
-                                rowCount: `${data.length} errors`,
+                                user:1,
+                                name: newData[0][0],
+                                error_count: newData.length,
+                                row_count: newData.length,
                                 file: file,
+                                campaigns:campaigns
                             }
 
-                            try {
-                                await mutate(
-                                    '/api/dashboard/1',
-                                    async (todos: any) => {
-                                        const updatedTodo = await fetch(
-                                            '/api/dashboard/1',
-                                            {
-                                                method: 'POST',
-                                                headers: new Headers({
-                                                    'Content-Type':
-                                                        'application/json',
-                                                    Accept: 'application/json',
-                                                }),
-                                                body: JSON.stringify(newTodo),
-                                            }
-                                        )
-
-                                        return [...todos, newTodo]
-                                    }
-                                )
-                            } catch (e) {
-                                console.log('shizz')
-                            }
+                            mutate('/api/dashboard/1', updateFn(newTodo), { optimisticData: [...data, newTodo], rollbackOnError: true });
                         }}
                     />
 
@@ -163,7 +160,7 @@ function DashboardContent() {
                             }}
                         >
                             {cards.map((cards: any, index: any) => {
-                                const { errorCount, name, rowCount, file } =
+                                const { error_count, name, row_count, file } =
                                     cards
                                 return (
                                     <Card key={index} sx={{ mb: '2rem' }}>
@@ -191,7 +188,7 @@ function DashboardContent() {
                                                     lineHeight: 2,
                                                 }}
                                             >
-                                                {rowCount}
+                                                {row_count}
                                             </Typography>
                                             <Typography
                                                 variant={'h6'}
@@ -201,7 +198,7 @@ function DashboardContent() {
                                                     lineHeight: 2,
                                                 }}
                                             >
-                                                {errorCount}
+                                                {error_count}
                                             </Typography>
                                             <div
                                                 style={{
@@ -296,3 +293,10 @@ function DashboardContent() {
 }
 
 export default DashboardContent
+
+
+/*
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4eXNncHp0dGd6cmhjbWN5ZXp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2NTQxMDc3MDIsImV4cCI6MTk2OTY4MzcwMn0._dxcNF4ShY1mpg2Dp4dU-uolkh8LEovuv9bc_gD0gnE
+
+*/

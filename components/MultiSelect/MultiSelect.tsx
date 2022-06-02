@@ -28,15 +28,11 @@ function getStyles(name: string, personName: readonly string[], theme: Theme) {
     }
 }
 
-export default function MultiSelect({ items }: any) {
-    const theme = useTheme()
-    const [personName, setPersonName] = React.useState<string[]>([])
-
-    const handleChange = (event: SelectChangeEvent<typeof personName>) => {
-        const {
-            target: { value },
-        } = event
-        setPersonName(typeof value === 'string' ? value.split(',') : value)
+export default function MultiSelect({ items, campaigns, setCampaigns }: any) {
+    const handleChange = ({
+        target: { value },
+    }: SelectChangeEvent) => {
+        setCampaigns(value)
     }
 
     return (
@@ -45,7 +41,7 @@ export default function MultiSelect({ items }: any) {
                 <InputLabel id="demo-multiple-chip-label">Campaign</InputLabel>
                 <Select
                     multiple
-                    value={personName}
+                    value={campaigns}
                     onChange={handleChange}
                     input={
                         <OutlinedInput
@@ -57,18 +53,17 @@ export default function MultiSelect({ items }: any) {
                         <Box
                             sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}
                         >
-                            {selected.map((value) => (
-                                <Chip key={value} label={value} />
+                            {campaigns.map((value:any) => (
+                                <Chip key={value} label={items.find((a:any) => a.id === value).name} />
                             ))}
                         </Box>
                     )}
                     MenuProps={MenuProps}
                 >
-                    {items.map((name: any) => (
+                    {items.map(({id, name}: any) => (
                         <MenuItem
-                            key={name}
-                            value={name}
-                            style={getStyles(name, personName, theme)}
+                            key={id}
+                            value={id}
                         >
                             {name}
                         </MenuItem>

@@ -7,13 +7,26 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import { useCSVReader } from 'react-papaparse'
 import MultiSelect from '../MultiSelect/MultiSelect'
+import useSWR, { useSWRConfig } from 'swr'
+
+const fetcher = async (url: string) => {
+    const res = await fetch(url)
+    if (!res.ok) {
+        throw Error("Yo that's NOT OK!!!")
+    }
+    const data = await res.json()
+    return data
+}
 
 const steps = ['Upload file', 'Choose Campaign']
 
 export default function HorizontalLinearStepper({ onClose }: any) {
     const [activeStep, setActiveStep] = React.useState(0)
-    const [state, setState] = React.useState([])
+    const [state, setState] = React.useState([]);
+    const [campaigns, setCampaigns] = React.useState([])
+
     const { CSVReader } = useCSVReader()
+    const {data} = useSWR('/api/settings/1', fetcher);
 
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1)
@@ -33,7 +46,7 @@ export default function HorizontalLinearStepper({ onClose }: any) {
                 </Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                     <Box sx={{ flex: '1 1 auto' }} />
-                    <Button onClick={() => onClose(state)}>Calculate</Button>
+                    <Button onClick={() => onClose({data:state, campaigns})}>Calculate</Button>
                 </Box>
             </>
         )
@@ -116,12 +129,13 @@ export default function HorizontalLinearStepper({ onClose }: any) {
                 <Box sx={{ display: 'flex', flexDirection: 'column', pt: 2 }}>
                     <Box sx={{ flex: '1 1 auto', pb: '1rem' }}>
                         <MultiSelect
-                            items={[
-                                'Test Campaign 1',
-                                'Test Campaign 2',
-                                'Test Campaign 3',
-                                'Test Campaign 4',
-                            ]}
+                            items={data.map(({id, name}:any)=>{
+                                return {id, name}
+                            })}
+                            campaigns={campaigns}
+                            setCampaigns={(val:any)=>{
+                                setCampaigns(val)
+                            }}
                         />
                     </Box>
                     <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>

@@ -1,33 +1,22 @@
 import { NextApiHandler } from 'next'
+import { supabase } from "../../libs/initSupabase";
 
-var data = [
-    [
-        {
-            name: 'Example upload',
-            errorCount: '24 errors',
-            rowCount: '223 rows',
-            file: `Column 1,Column 2,Column 3,Column 4
-      1-1,1-2,1-3,1-4
-      2-1,2-2,2-3,2-4
-      3-1,3-2,3-3,3-4
-      4,5,6,7`,
-        },
-    ],
-]
-
-const user: NextApiHandler = (req, res) => {
+const user: NextApiHandler = async(req, res) => {
     const { id } = req.query
 
     if (req.method === 'POST') {
-        data[Number(id) - 1].push(req.body)
-        res.status(200).json(data[Number(id) - 1])
+        // probs do some validation on this?? 
+        const { data, error } = await supabase.from("results").upsert(req.body)
+        console.log(data);
+        console.log(error);
+        res.status(200).json(data)
         return
     }
 
-    const userData = typeof id === 'string' ? data[Number(id) - 1] : data[0]
+    const { data, error } = await supabase.from("results").select("*").eq('user', id);
 
-    if (userData) {
-        res.status(200).json(userData)
+    if (data) {
+        res.status(200).json(data)
     } else {
         res.status(404).end()
     }

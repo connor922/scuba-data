@@ -8,6 +8,7 @@ import CampaignModal from '../components/CampaignModal/CampaignModal'
 import Wrapper from '../components/Wrapper/Wrapper'
 import Accord from '../components/Accord/Accord'
 import CircularProgress from '@mui/material/CircularProgress'
+import { useSWRConfig } from 'swr'
 
 import useSWR from 'swr'
 
@@ -20,6 +21,21 @@ const fetcher = async (url: string) => {
     return data
 }
 
+const updateFn = async (newData: any) => {
+    await fetch(
+        "/api/settings/1",
+        {
+            method: 'POST',
+            headers: new Headers({
+                'Content-Type':
+                    'application/json',
+                Accept: 'application/json',
+            }),
+            body: JSON.stringify(newData),
+        }
+    )
+}
+
 function Settings() {
     const [expanded, setExpanded] = useState('')
     const [state, setState] = useState<any[]>([])
@@ -27,6 +43,9 @@ function Settings() {
     const [isLoading, setIsLoading] = useState(true)
     const result = useSWR(`/api/settings/1`, fetcher)
     const data = result.data
+
+    const { mutate } = useSWRConfig()
+
 
     const handleClickOpen = () => {
         setIsOpen(true)
@@ -53,7 +72,20 @@ function Settings() {
             <CampaignModal
                 isOpen={isOpen}
                 handleClose={handleClose}
-                onSubmit={() => {
+                onSubmit={(name:string) => {
+                    const newTodo = {
+                        id: null,
+                        name: name,
+                        state: 'LIVE',
+                        seniorites: [],
+                        keywords: [],
+                        companysList: [],
+                        jobTitles: [],
+                        user:1
+                    }
+
+                    mutate('/api/settings/1', updateFn(newTodo), { optimisticData: [...data, newTodo], rollbackOnError: true });
+
                     handleClose()
                 }}
             />

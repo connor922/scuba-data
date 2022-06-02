@@ -179,6 +179,7 @@ export default function HorizontalLinearStepper({
     keywords,
     companysList,
     jobTitles,
+    sendToArchive
 }: any) {
     const [companyList, setCompanyList] = useState('')
     const [jobTitle, setJobTitle] = useState('')
@@ -232,8 +233,13 @@ export default function HorizontalLinearStepper({
                 >
                     <ToggleButton value="LIVE">LIVE</ToggleButton>
                     <ToggleButton value="INACTIVE">INACTIVE</ToggleButton>
-                    <ToggleButton value="ARCHIVED">ARCHIVED</ToggleButton>
                 </ToggleButtonGroup>
+                <Button
+                    variant="contained"
+                    onClick={sendToArchive}
+                >
+                    Archive
+                </Button>
             </AccordionSummary>
             <AccordionDetails
                 sx={{
@@ -281,7 +287,6 @@ export default function HorizontalLinearStepper({
                                     setKeyword(event.target.value)
                                 }}
                                 onKeyPress={(ev) => {
-                                    console.log(`Pressed keyCode ${ev.key}`);
                                     if (ev.key === 'Enter') {
                                       // Do code here
                                       ev.preventDefault();
@@ -391,7 +396,6 @@ export default function HorizontalLinearStepper({
                                     setJobTitle(event.target.value)
                                 }}
                                 onKeyPress={(ev) => {
-                                    console.log(`Pressed keyCode ${ev.key}`);
                                     if (ev.key === 'Enter') {
                                       // Do code here
                                       ev.preventDefault();
@@ -495,7 +499,6 @@ export default function HorizontalLinearStepper({
                                 setCompanyList(event.target.value)
                             }}
                             onKeyPress={(ev) => {
-                                console.log(`Pressed keyCode ${ev.key}`);
                                 if (ev.key === 'Enter') {
                                   // Do code here
                                   ev.preventDefault();

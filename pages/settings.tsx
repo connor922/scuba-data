@@ -36,6 +36,22 @@ const updateFn = async (newData: any) => {
     )
 }
 
+const archieveSetting = async (id: any) => {
+    await fetch(
+        `/api/settings/archieve`,
+        {
+            method: 'POST',
+            headers: new Headers({
+                'Content-Type':
+                    'application/json',
+                Accept: 'application/json',
+            }),
+            body: id,
+        }
+    )
+}
+
+
 function Settings() {
     const [expanded, setExpanded] = useState('')
     const [state, setState] = useState<any[]>([])
@@ -145,6 +161,10 @@ function Settings() {
                                         handleChange={handleChange}
                                         name={item.name}
                                         state={item.state}
+                                        sendToArchive={async()=>{
+                                            const newData = data.filter((post:any)=> post.id !== item.id);
+                                            mutate(`/api/settings/${profile?.id}`, archieveSetting(item.id), { optimisticData: [...newData], rollbackOnError: true });
+                                        }}
                                     />
                                 )
                             })

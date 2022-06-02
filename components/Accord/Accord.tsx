@@ -280,6 +280,37 @@ export default function HorizontalLinearStepper({
                                 onChange={(event) => {
                                     setKeyword(event.target.value)
                                 }}
+                                onKeyPress={(ev) => {
+                                    console.log(`Pressed keyCode ${ev.key}`);
+                                    if (ev.key === 'Enter') {
+                                      // Do code here
+                                      ev.preventDefault();
+                                      setState((prevstate: any) => {
+                                        return prevstate.map((long: any) => {
+                                            let data = {
+                                                ...long,
+                                            }
+
+                                            if (long.id === id) {
+                                                data = {
+                                                    ...data,
+                                                    keywords: [
+                                                        ...data.keywords,
+                                                        {
+                                                            id: data.keywords
+                                                                .length,
+                                                            name: keyword,
+                                                            isIncluded: true,
+                                                        },
+                                                    ],
+                                                }
+                                            }
+
+                                            return data
+                                        })
+                                    })
+                                    }
+                                  }}
                             />
                             <Button
                                 onClick={() => {
@@ -359,6 +390,37 @@ export default function HorizontalLinearStepper({
                                 onChange={(event) => {
                                     setJobTitle(event.target.value)
                                 }}
+                                onKeyPress={(ev) => {
+                                    console.log(`Pressed keyCode ${ev.key}`);
+                                    if (ev.key === 'Enter') {
+                                      // Do code here
+                                      ev.preventDefault();
+                                      setState((prevstate: any) => {
+                                        return prevstate.map((long: any) => {
+                                            let data = {
+                                                ...long,
+                                            }
+
+                                            if (long.id === id) {
+                                                data = {
+                                                    ...data,
+                                                    jobTitles: [
+                                                        ...data.jobTitles,
+                                                        {
+                                                            id: data.jobTitles
+                                                                .length,
+                                                            name: jobTitle,
+                                                            isIncluded: true,
+                                                        },
+                                                    ],
+                                                }
+                                            }
+
+                                            return data
+                                        })
+                                    })
+                                    }
+                                  }}
                             />
                             <Button
                                 onClick={() => {
@@ -432,6 +494,37 @@ export default function HorizontalLinearStepper({
                             onChange={(event) => {
                                 setCompanyList(event.target.value)
                             }}
+                            onKeyPress={(ev) => {
+                                console.log(`Pressed keyCode ${ev.key}`);
+                                if (ev.key === 'Enter') {
+                                  // Do code here
+                                  ev.preventDefault();
+                                  setState((prevstate: any) => {
+                                    return prevstate.map((long: any) => {
+                                        let data = {
+                                            ...long,
+                                        }
+
+                                        if (long.id === id) {
+                                            data = {
+                                                ...data,
+                                                companysList: [
+                                                    ...data.companysList,
+                                                    {
+                                                        id: data.companysList
+                                                            .length,
+                                                        name: companyList,
+                                                        isIncluded: true,
+                                                    },
+                                                ],
+                                            }
+                                        }
+
+                                        return data
+                                    })
+                                })
+                                }
+                              }}
                         />
                         <Button
                             onClick={() => {
@@ -478,7 +571,6 @@ export default function HorizontalLinearStepper({
                                                 index: number
                                             ) => {
                                                 if (b.length == 2) {
-                                                    debugger
                                                     memo.push({
                                                         id:
                                                             data.companysList

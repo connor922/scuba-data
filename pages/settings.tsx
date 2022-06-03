@@ -21,6 +21,17 @@ const fetcher = async (url: string) => {
     return data
 }
 
+const updateData = async (newData: any) => {
+    await fetch(`/api/settings/update`, {
+        method: 'POST',
+        headers: new Headers({
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+        }),
+        body: JSON.stringify(newData),
+    })
+}
+
 const updateFn = async (newData: any) => {
     await fetch(`/api/settings/${newData.user}`, {
         method: 'POST',
@@ -142,18 +153,33 @@ function Settings() {
                                 return (
                                     <Accord
                                         key={item.id}
-                                        setState={setState}
-                                        seniorites={item.seniorites}
-                                        keywords={item.keywords}
-                                        companysList={item.companysList}
-                                        jobTitles={item.jobTitles}
+                                        updateData={
+                                            async (updatedsetting) => {
+                                                const newData = state.map(
+                                                    (post: any) => {
+                                                        if (post.id === item.id) {
+                                                            return updatedsetting
+                                                        }
+                                                        return post
+                                                    }
+                                                )
+                                                mutate(
+                                                    `/api/settings/${profile?.id}`,
+                                                    updateData(updatedsetting),
+                                                    {
+                                                        optimisticData: [
+                                                            ...newData,
+                                                        ],
+                                                        rollbackOnError: true,
+                                                    }
+                                                )
+                                            }
+                                        }
+                                        item={item}
                                         isExpanded={
                                             expanded == item.id?.toString()
                                         }
-                                        id={item.id}
-                                        handleChange={handleChange}
-                                        name={item.name}
-                                        state={item.state}
+                                        handleChange={() => handleChange(item.id)}
                                         sendToArchive={async () => {
                                             const newData = data.filter(
                                                 (post: any) =>

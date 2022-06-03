@@ -12,18 +12,40 @@ import AddIcon from '@mui/icons-material/Add'
 import { useState } from 'react'
 import { useCSVReader } from 'react-papaparse'
 
+
+interface item {
+    name: string,
+    isIncluded: boolean,
+}
+interface campaign {
+    name: string,
+    state: string,
+    seniorites: item[],
+    keywords: item[],
+    companysList: item[],
+    jobTitles: item[],
+}
+
+interface ListProps {
+    items: item[],
+    filterProp: string,
+    newState: boolean,
+    setState: (items: item[]) => void,
+    colour: string,
+}
+
+
 function List({
     items,
     filterProp,
     newState,
-    listName,
     setState,
-    id,
     colour,
-}: any) {
+}: ListProps) {
+
     return items
         .filter((a: any) => a[filterProp] === newState)
-        .map((a: any) => {
+        .map((a: item) => {
             return (
                 <Chip
                     key={a.name}
@@ -33,61 +55,42 @@ function List({
                     }}
                     label={a.name}
                     onClick={() => {
-                        setState((prevstate: any) => {
-                            return prevstate.map((long: any) => {
-                                let data = {
-                                    ...long,
+                        const newItems = items.map((item: item) => {
+                            if (a.name === item.name) {
+                                return {
+                                    ...item,
+                                    [filterProp]: !newState,
                                 }
-
-                                if (long.id === id) {
-                                    data = {
-                                        ...data,
-                                        [listName]: data[listName].map(
-                                            (r: any) => {
-                                                if (a.id === r.id) {
-                                                    return {
-                                                        ...r,
-                                                        [filterProp]: !newState,
-                                                    }
-                                                }
-                                                return r
-                                            }
-                                        ),
-                                    }
-                                }
-
-                                return data
-                            })
+                            }
+                            return item
                         })
+                        setState(newItems)
                     }}
                     onDelete={() => {
-                        setState((prevstate: any) => {
-                            return prevstate.reduce((memo: any, long: any) => {
-                                if (long.id === id) {
-                                    memo.push({
-                                        ...long,
-                                        [listName]: long[listName].filter(
-                                            (r: any) => {
-                                                return a.id !== r.id
-                                            }
-                                        ),
-                                    })
-                                } else {
-                                    memo.push(long)
-                                }
-
-                                return memo
-                            }, [])
+                        const newItems = items.filter((item: item) => {
+                            return a.name !== item.name
                         })
+                        setState(newItems)
                     }}
                 />
             )
         })
 }
 
-function Item({ label, setState, items, id, listName }: any) {
-    const [senority, setSenority] = useState('')
+interface ItemProps {
+    items: item[],
+    label: string,
+    updateData: (items: item[]) => void,
+}
 
+
+function Item({ label, updateData, items }: ItemProps) {
+    const [senority, setSenority] = useState<string>('')
+    const { CSVReader } = useCSVReader()
+
+    const setState = (data: item[]) => {
+        updateData(data)
+    }
     return (
         <Box
             sx={{
@@ -108,36 +111,65 @@ function Item({ label, setState, items, id, listName }: any) {
                     onChange={(event) => {
                         setSenority(event.target.value)
                     }}
+                    onKeyPress={(ev) => {
+                        if (ev.key === 'Enter') {
+                            ev.preventDefault()
+                            updateData([...items, {
+                                name: senority,
+                                isIncluded: true,
+                            }])
+                            setSenority("")
+                        }
+                    }}
                 />
                 <Button
                     onClick={() => {
-                        setState((prevstate: any) => {
-                            return prevstate.map((long: any) => {
-                                let data = {
-                                    ...long,
-                                }
-
-                                if (long.id === id) {
-                                    data = {
-                                        ...data,
-                                        [listName]: [
-                                            ...data[listName],
-                                            {
-                                                id: data[listName].length,
-                                                name: senority,
-                                                isIncluded: true,
-                                            },
-                                        ],
-                                    }
-                                }
-
-                                return data
-                            })
-                        })
+                        updateData([...items, {
+                            name: senority,
+                            isIncluded: true,
+                        }])
+                        setSenority("")
                     }}
                 >
                     Add
                 </Button>
+                <CSVReader
+                    onUploadAccepted={(results: { data: string[][] }) => {
+
+                        const newData = results.data.slice(1)
+                        const newItems = newData.reduce(
+                            (
+                                memo: any,
+                                b: string[],
+                                index: number
+                            ) => {
+                                if (b.length == 2) {
+                                    memo.push({
+                                        name: b[0],
+                                        isIncluded:
+                                            b[1] === 'TRUE',
+                                    })
+                                }
+
+                                return memo
+                            },
+                            []
+                        )
+
+                        updateData([...items, ...newItems])
+                    }}
+                >
+                    {({ getRootProps }: any) => (
+                        <Button
+                            variant="contained"
+                            component="span"
+                            {...getRootProps()}
+                        >
+                            <AddIcon />
+                            Upload
+                        </Button>
+                    )}
+                </CSVReader>
             </div>
             <div
                 style={{
@@ -150,45 +182,40 @@ function Item({ label, setState, items, id, listName }: any) {
                     items={items}
                     filterProp="isIncluded"
                     newState={true}
-                    listName={listName}
                     setState={setState}
-                    id={id}
                     colour="green"
                 />
                 <List
                     items={items}
                     filterProp="isIncluded"
                     newState={false}
-                    listName={listName}
                     setState={setState}
-                    id={id}
                     colour="crimson"
                 />
             </div>
         </Box>
     )
 }
-export default function HorizontalLinearStepper({
+
+interface AccordProps {
+    isExpanded: boolean,
+    handleChange: () => void,
+    item: campaign,
+    updateData: (items: campaign) => void,
+    sendToArchive: () => void,
+}
+
+
+export default function Accord({
     isExpanded,
     handleChange,
-    id,
-    name,
-    state,
-    setState,
-    seniorites,
-    keywords,
-    companysList,
-    jobTitles,
+    item,
+    updateData,
     sendToArchive,
-}: any) {
-    const [companyList, setCompanyList] = useState('')
-    const [jobTitle, setJobTitle] = useState('')
-    const [keyword, setKeyword] = useState('')
-
-    const { CSVReader } = useCSVReader()
+}: AccordProps) {
 
     return (
-        <Accordion expanded={isExpanded} onChange={() => handleChange(id)}>
+        <Accordion expanded={isExpanded} onChange={handleChange}>
             <AccordionSummary
                 aria-controls="panel1bh-content"
                 id="panel1bh-header"
@@ -203,11 +230,11 @@ export default function HorizontalLinearStepper({
                         marginLeft: '1rem',
                     }}
                 >
-                    {name}
+                    {item.name}
                 </Typography>
                 <ToggleButtonGroup
                     color="primary"
-                    value={state}
+                    value={item.state}
                     exclusive
                     onChange={(
                         event: React.MouseEvent<HTMLElement>,
@@ -215,20 +242,7 @@ export default function HorizontalLinearStepper({
                     ) => {
                         event.preventDefault()
                         event.stopPropagation()
-
-                        setState((prevState: any) => {
-                            const conan = prevState.map((elm: any) => {
-                                let newItem = {
-                                    ...elm,
-                                }
-                                if (elm.id == id) {
-                                    newItem.state = newAlignment
-                                }
-                                return newItem
-                            })
-
-                            return conan
-                        })
+                        updateData({ ...item, state: newAlignment })
                     }}
                 >
                     <ToggleButton value="LIVE">LIVE</ToggleButton>
@@ -256,399 +270,36 @@ export default function HorizontalLinearStepper({
                         justifyContent: 'space-between',
                     }}
                 >
-                    <List
+                    <Item
                         label="Seniorites"
-                        setState={setState}
-                        items={seniorites}
-                        id={id}
-                        listName="seniorites"
+                        updateData={(data: item[]) => {
+                            updateData({ ...item, seniorites: data })
+                        }}
+                        items={item.seniorites}
                     />
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            gap: '1rem',
-                            flexDirection: 'column',
-                            pt: '2rem',
+                    <Item
+                        label="Keywords"
+                        updateData={(data: item[]) => {
+                            updateData({ ...item, keywords: data })
                         }}
-                    >
-                        <Typography sx={{ fontWeight: 600 }}>
-                            Keywords
-                        </Typography>
-                        <div style={{ display: 'flex' }}>
-                            <TextField
-                                id="standard-basic"
-                                placeholder="job title"
-                                variant="standard"
-                                value={keyword}
-                                onChange={(event) => {
-                                    setKeyword(event.target.value)
-                                }}
-                                onKeyPress={(ev) => {
-                                    if (ev.key === 'Enter') {
-                                        // Do code here
-                                        ev.preventDefault()
-                                        setState((prevstate: any) => {
-                                            return prevstate.map(
-                                                (long: any) => {
-                                                    let data = {
-                                                        ...long,
-                                                    }
-
-                                                    if (long.id === id) {
-                                                        data = {
-                                                            ...data,
-                                                            keywords: [
-                                                                ...data.keywords,
-                                                                {
-                                                                    id: data
-                                                                        .keywords
-                                                                        .length,
-                                                                    name: keyword,
-                                                                    isIncluded:
-                                                                        true,
-                                                                },
-                                                            ],
-                                                        }
-                                                    }
-
-                                                    return data
-                                                }
-                                            )
-                                        })
-                                    }
-                                }}
-                            />
-                            <Button
-                                onClick={() => {
-                                    setState((prevstate: any) => {
-                                        return prevstate.map((long: any) => {
-                                            let data = {
-                                                ...long,
-                                            }
-
-                                            if (long.id === id) {
-                                                data = {
-                                                    ...data,
-                                                    keywords: [
-                                                        ...data.keywords,
-                                                        {
-                                                            id: data.keywords
-                                                                .length,
-                                                            name: keyword,
-                                                            isIncluded: true,
-                                                        },
-                                                    ],
-                                                }
-                                            }
-
-                                            return data
-                                        })
-                                    })
-                                }}
-                            >
-                                Add
-                            </Button>
-                        </div>
-                        <div
-                            style={{
-                                display: 'flex',
-                                gap: '1rem',
-                                flexWrap: 'wrap',
-                            }}
-                        >
-                            <List
-                                items={keywords}
-                                filterProp="isIncluded"
-                                newState={true}
-                                listName={'keywords'}
-                                setState={setState}
-                                id={id}
-                                colour="green"
-                            />
-                            <List
-                                items={keywords}
-                                filterProp="isIncluded"
-                                newState={false}
-                                listName={'keywords'}
-                                setState={setState}
-                                id={id}
-                                colour="crimson"
-                            />
-                        </div>
-                    </Box>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            gap: '1rem',
-                            flexDirection: 'column',
-                            pt: '2rem',
+                        items={item.keywords}
+                    />
+                    <Item
+                        label="Job Titles"
+                        updateData={(data: item[]) => {
+                            updateData({ ...item, jobTitles: data })
                         }}
-                    >
-                        <Typography sx={{ fontWeight: 600 }}>
-                            Job Titles
-                        </Typography>
-                        <div style={{ display: 'flex' }}>
-                            <TextField
-                                id="standard-basic"
-                                placeholder="job title"
-                                variant="standard"
-                                value={jobTitle}
-                                onChange={(event) => {
-                                    setJobTitle(event.target.value)
-                                }}
-                                onKeyPress={(ev) => {
-                                    if (ev.key === 'Enter') {
-                                        // Do code here
-                                        ev.preventDefault()
-                                        setState((prevstate: any) => {
-                                            return prevstate.map(
-                                                (long: any) => {
-                                                    let data = {
-                                                        ...long,
-                                                    }
-
-                                                    if (long.id === id) {
-                                                        data = {
-                                                            ...data,
-                                                            jobTitles: [
-                                                                ...data.jobTitles,
-                                                                {
-                                                                    id: data
-                                                                        .jobTitles
-                                                                        .length,
-                                                                    name: jobTitle,
-                                                                    isIncluded:
-                                                                        true,
-                                                                },
-                                                            ],
-                                                        }
-                                                    }
-
-                                                    return data
-                                                }
-                                            )
-                                        })
-                                    }
-                                }}
-                            />
-                            <Button
-                                onClick={() => {
-                                    setState((prevstate: any) => {
-                                        return prevstate.map((long: any) => {
-                                            let data = {
-                                                ...long,
-                                            }
-
-                                            if (long.id === id) {
-                                                data = {
-                                                    ...data,
-                                                    jobTitles: [
-                                                        ...data.jobTitles,
-                                                        {
-                                                            id: data.jobTitles
-                                                                .length,
-                                                            name: jobTitle,
-                                                            isIncluded: true,
-                                                        },
-                                                    ],
-                                                }
-                                            }
-
-                                            return data
-                                        })
-                                    })
-                                }}
-                            >
-                                Add
-                            </Button>
-                        </div>
-                        <div
-                            style={{
-                                display: 'flex',
-                                gap: '1rem',
-                                flexWrap: 'wrap',
-                            }}
-                        >
-                            <List
-                                items={jobTitles}
-                                filterProp="isIncluded"
-                                newState={true}
-                                listName={'jobTitles'}
-                                setState={setState}
-                                id={id}
-                                colour="green"
-                            />
-                            <List
-                                items={jobTitles}
-                                filterProp="isIncluded"
-                                newState={false}
-                                listName={'jobTitles'}
-                                setState={setState}
-                                id={id}
-                                colour="crimson"
-                            />
-                        </div>
-                    </Box>
+                        items={item.jobTitles}
+                    />
                 </Box>
                 <Box sx={{ flex: '40%', maxwidth: '40%' }}>
-                    <Typography sx={{ fontWeight: 600, pt: '1rem' }}>
-                        Companys List
-                    </Typography>
-                    <div style={{ display: 'flex', paddingTop: '1rem' }}>
-                        <TextField
-                            id="standard-basic"
-                            placeholder="company"
-                            variant="standard"
-                            value={companyList}
-                            onChange={(event) => {
-                                setCompanyList(event.target.value)
-                            }}
-                            onKeyPress={(ev) => {
-                                if (ev.key === 'Enter') {
-                                    // Do code here
-                                    ev.preventDefault()
-                                    setState((prevstate: any) => {
-                                        return prevstate.map((long: any) => {
-                                            let data = {
-                                                ...long,
-                                            }
-
-                                            if (long.id === id) {
-                                                data = {
-                                                    ...data,
-                                                    companysList: [
-                                                        ...data.companysList,
-                                                        {
-                                                            id: data
-                                                                .companysList
-                                                                .length,
-                                                            name: companyList,
-                                                            isIncluded: true,
-                                                        },
-                                                    ],
-                                                }
-                                            }
-
-                                            return data
-                                        })
-                                    })
-                                }
-                            }}
-                        />
-                        <Button
-                            onClick={() => {
-                                setState((prevstate: any) => {
-                                    return prevstate.map((long: any) => {
-                                        let data = {
-                                            ...long,
-                                        }
-
-                                        if (long.id === id) {
-                                            data = {
-                                                ...data,
-                                                companysList: [
-                                                    ...data.companysList,
-                                                    {
-                                                        id: data.companysList
-                                                            .length,
-                                                        name: companyList,
-                                                        isIncluded: true,
-                                                    },
-                                                ],
-                                            }
-                                        }
-
-                                        return data
-                                    })
-                                })
-                            }}
-                        >
-                            Add
-                        </Button>
-                        <CSVReader
-                            onUploadAccepted={(results: any) => {
-                                setState((prevstate: any) => {
-                                    return prevstate.map((long: any) => {
-                                        let data = {
-                                            ...long,
-                                        }
-                                        const items = results.data.slice(1)
-                                        const newItems = items.reduce(
-                                            (
-                                                memo: any,
-                                                b: string[],
-                                                index: number
-                                            ) => {
-                                                if (b.length == 2) {
-                                                    memo.push({
-                                                        id:
-                                                            data.companysList
-                                                                .length + index,
-                                                        name: b[0],
-                                                        isIncluded:
-                                                            b[1] === 'TRUE',
-                                                    })
-                                                }
-
-                                                return memo
-                                            },
-                                            []
-                                        )
-
-                                        if (long.id === id) {
-                                            data = {
-                                                ...data,
-                                                companysList: [
-                                                    ...data.companysList,
-                                                    ...newItems,
-                                                ],
-                                            }
-                                        }
-
-                                        return data
-                                    })
-                                })
-                            }}
-                        >
-                            {({ getRootProps }: any) => (
-                                <Button
-                                    variant="contained"
-                                    component="span"
-                                    {...getRootProps()}
-                                >
-                                    <AddIcon />
-                                    Upload
-                                </Button>
-                            )}
-                        </CSVReader>
-                    </div>
-                    <div
-                        style={{
-                            display: 'flex',
-                            gap: '1rem',
-                            flexWrap: 'wrap',
-                            paddingTop: '1rem',
+                    <Item
+                        label="Companies List"
+                        updateData={(data: item[]) => {
+                            updateData({ ...item, companysList: data })
                         }}
-                    >
-                        <List
-                            items={companysList}
-                            filterProp="isIncluded"
-                            newState={true}
-                            listName={'companysList'}
-                            setState={setState}
-                            id={id}
-                            colour="green"
-                        />
-                        <List
-                            items={companysList}
-                            filterProp="isIncluded"
-                            newState={false}
-                            listName={'companysList'}
-                            setState={setState}
-                            id={id}
-                            colour="crimson"
-                        />
-                    </div>
+                        items={item.companysList}
+                    />
                 </Box>
             </AccordionDetails>
         </Accordion>

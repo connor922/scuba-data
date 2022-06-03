@@ -4,7 +4,6 @@ from collections import Counter
 import math
 import json
 import simplejson
-import unidecode
 
 
 class JobTitleMatch:
@@ -21,22 +20,6 @@ class JobTitleMatch:
         self.exclude_sen = exclude_sen
         self.jt = jt  # relevant jobtitles from the brief in list format
         self.exclude_jt = exclude_jt  # exclusion jobtitles from the brief in list format
-
-        # same as above but without punctuation, lowercase, and with english characters
-        self.jobtitles_clean = [
-            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in jobtitles]
-        self.kw_clean = [
-            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in kw]
-        self.exclude_kw_clean = [
-            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in exclude_kw]
-        self.sen_clean = [
-            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in sen]
-        self.exclude_sen_clean = [
-            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in exclude_sen]
-        self.jt_clean = [
-            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in jt]
-        self.exclude_jt_clean = [
-            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in exclude_jt]
 
     def remove_filler_words_from_jts(self):
 
@@ -243,14 +226,6 @@ class CompanyMatch(JobTitleMatch):
         self.companies = companies
         self.targets = targets
         self.exclude = exclude
-
-        # same as above but without punctuation, lowercase, and with english characters
-        self.companies_clean = [
-            unidecode(re.sub(r'[\W_]+ ', " ", j)).lower() for j in companies]
-        self.targets_clean = [
-            unidecode(re.sub(r'[\W_]+ ', " ", j)).lower() for j in targets]
-        self.exclude_clean = [
-            unidecode(re.sub(r'[\W_]+ ', " ", j)).lower() for j in exclude]
 
     def remove_company_extensions(self):
 

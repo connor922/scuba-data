@@ -25,8 +25,8 @@ export default function SignInSide() {
       e.preventDefault();
   
       const { error } = await supabase.auth.signIn({
-        email,
-        password,
+        email:email.trim(),
+        password:password.trim(),
       });
   
       if (error) {

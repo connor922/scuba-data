@@ -4,7 +4,7 @@ from collections import Counter
 import math
 import json
 import simplejson
-from unidecode import unidecode
+import unidecode
 
 
 class JobTitleMatch:

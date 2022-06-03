@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography'
 import { useCSVReader } from 'react-papaparse'
 import MultiSelect from '../MultiSelect/MultiSelect'
 import useSWR, { useSWRConfig } from 'swr'
+import { supabase } from '../../libs/initSupabase'
 
 const fetcher = async (url: string) => {
     const res = await fetch(url)
@@ -20,13 +21,23 @@ const fetcher = async (url: string) => {
 
 const steps = ['Upload file', 'Choose Campaign']
 
-export default function HorizontalLinearStepper({ onClose }: any) {
-    const [activeStep, setActiveStep] = React.useState(0)
-    const [state, setState] = React.useState([]);
-    const [campaigns, setCampaigns] = React.useState([])
+interface StepperProps {
+    onClose: (data: string[][], campaigns: string[]) => void
+}
+
+interface item {
+    name: string
+    id: string
+}
+
+export default function LineStepper({ onClose }: StepperProps) {
+    const [activeStep, setActiveStep] = React.useState<number>(0)
+    const [state, setState] = React.useState<string[][]>([])
+    const [campaigns, setCampaigns] = React.useState<string[]>([])
+    const profile = supabase.auth.user()
 
     const { CSVReader } = useCSVReader()
-    const {data} = useSWR('/api/settings/1', fetcher);
+    const { data } = useSWR(`/api/settings/${profile?.id}`, fetcher)
 
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1)
@@ -46,7 +57,9 @@ export default function HorizontalLinearStepper({ onClose }: any) {
                 </Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                     <Box sx={{ flex: '1 1 auto' }} />
-                    <Button onClick={() => onClose({data:state, campaigns})}>Calculate</Button>
+                    <Button onClick={() => onClose(state, campaigns)}>
+                        Calculate
+                    </Button>
                 </Box>
             </>
         )
@@ -56,7 +69,7 @@ export default function HorizontalLinearStepper({ onClose }: any) {
                 <Typography sx={{ mt: 2, mb: 1 }}>
                     <Stepper />
                     <CSVReader
-                        onUploadAccepted={(results: any) => {
+                        onUploadAccepted={(results: { data: string[][] }) => {
                             setState(results.data)
                         }}
                     >
@@ -129,11 +142,11 @@ export default function HorizontalLinearStepper({ onClose }: any) {
                 <Box sx={{ display: 'flex', flexDirection: 'column', pt: 2 }}>
                     <Box sx={{ flex: '1 1 auto', pb: '1rem' }}>
                         <MultiSelect
-                            items={data.map(({id, name}:any)=>{
-                                return {id, name}
+                            items={data.map(({ id, name }: item) => {
+                                return { id, name }
                             })}
                             campaigns={campaigns}
-                            setCampaigns={(val:any)=>{
+                            setCampaigns={(val: string[]) => {
                                 setCampaigns(val)
                             }}
                         />

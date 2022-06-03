@@ -13,36 +13,32 @@ import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import * as React from 'react'
 import { useState } from 'react'
-import { supabase } from "../libs/initSupabase";
-
+import { supabase } from '../libs/initSupabase'
 
 export default function SignInSide() {
-    const router = useRouter();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-  
+    const router = useRouter()
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+
     const handleSignIn = async (e: React.FormEvent) => {
-      e.preventDefault();
-  
-      const { error } = await supabase.auth.signIn({
-        email:email.trim(),
-        password:password.trim(),
-      });
-  
-      if (error) {
-        alert(JSON.stringify(error));
-      } else {
-        router.push('/dashboard');
-      }
-    };
+        e.preventDefault()
 
+        const { error } = await supabase.auth.signIn({
+            email: email.trim(),
+            password: password.trim(),
+        })
 
-    const profile = supabase.auth.user();
-    
+        if (error) {
+            alert(JSON.stringify(error))
+        } else {
+            router.push('/dashboard')
+        }
+    }
+
+    const profile = supabase.auth.user()
+
     if (profile) {
-        router.push('/dashboard');
-    
-    
+        router.push('/dashboard')
     }
 
     return (
@@ -117,7 +113,11 @@ export default function SignInSide() {
                             autoComplete="email"
                             autoFocus
                             value={email}
-                            onChange={(event:any)=>{
+                            onChange={(
+                                event: React.ChangeEvent<
+                                    HTMLInputElement | HTMLTextAreaElement
+                                >
+                            ) => {
                                 setEmail(event?.target.value)
                             }}
                         />
@@ -131,7 +131,11 @@ export default function SignInSide() {
                             id="password"
                             autoComplete="current-password"
                             value={password}
-                            onChange={(event:any)=>{
+                            onChange={(
+                                event: React.ChangeEvent<
+                                    HTMLInputElement | HTMLTextAreaElement
+                                >
+                            ) => {
                                 setPassword(event?.target.value)
                             }}
                         />
@@ -161,16 +165,16 @@ export default function SignInSide() {
                                 variant="contained"
                                 component="h1"
                                 fullWidth
-
                             >
                                 Create Account
                             </Button>
                         </Link>
-
-                        <br/><br/><br/>
-                        Test User <br/>
-                        User: conanmalanaphy@gmail.com <br/>
-                        Password: conan1 <br/>
+                        <br />
+                        <br />
+                        <br />
+                        Test User <br />
+                        User: conanmalanaphy@gmail.com <br />
+                        Password: conan1 <br />
                     </Box>
                 </Box>
             </Grid>

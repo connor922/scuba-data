@@ -19,20 +19,23 @@ const MenuProps = {
     },
 }
 
-function getStyles(name: string, personName: readonly string[], theme: Theme) {
-    return {
-        fontWeight:
-            personName.indexOf(name) === -1
-                ? theme.typography.fontWeightRegular
-                : theme.typography.fontWeightMedium,
-    }
+interface item {
+    name: string
+    id: string
+}
+interface MultiSelectProps {
+    items: item[]
+    campaigns: string[]
+    setCampaigns: (value: string[]) => void
 }
 
-export default function MultiSelect({ items, campaigns, setCampaigns }: any) {
-    const handleChange = ({
-        target: { value },
-    }: SelectChangeEvent) => {
-        setCampaigns(value)
+export default function MultiSelect({
+    items,
+    campaigns,
+    setCampaigns,
+}: MultiSelectProps) {
+    const handleChange = ({ target: { value } }: SelectChangeEvent) => {
+        setCampaigns(value as unknown as string[])
     }
 
     return (
@@ -41,7 +44,7 @@ export default function MultiSelect({ items, campaigns, setCampaigns }: any) {
                 <InputLabel id="demo-multiple-chip-label">Campaign</InputLabel>
                 <Select
                     multiple
-                    value={campaigns}
+                    value={campaigns as unknown as string}
                     onChange={handleChange}
                     input={
                         <OutlinedInput
@@ -53,18 +56,20 @@ export default function MultiSelect({ items, campaigns, setCampaigns }: any) {
                         <Box
                             sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}
                         >
-                            {campaigns.map((value:any) => (
-                                <Chip key={value} label={items.find((a:any) => a.id === value).name} />
+                            {campaigns.map((value: string) => (
+                                <Chip
+                                    key={value}
+                                    label={
+                                        items.find((a) => a.id === value)?.name
+                                    }
+                                />
                             ))}
                         </Box>
                     )}
                     MenuProps={MenuProps}
                 >
-                    {items.map(({id, name}: any) => (
-                        <MenuItem
-                            key={id}
-                            value={id}
-                        >
+                    {items.map(({ id, name }) => (
+                        <MenuItem key={id} value={id}>
                             {name}
                         </MenuItem>
                     ))}

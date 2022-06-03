@@ -1,11 +1,10 @@
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import type { AppProps } from 'next/app';
-import '../styles/globals.css';
+import { createTheme, ThemeProvider } from '@mui/material/styles'
+import type { AppProps } from 'next/app'
+import '../styles/globals.css'
 
 const mdTheme = createTheme()
 
 function MyApp({ Component, pageProps }: AppProps) {
-
     return (
         <ThemeProvider theme={mdTheme}>
             <Component {...pageProps} />

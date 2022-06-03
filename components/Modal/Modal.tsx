@@ -3,7 +3,17 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import Stepper from '../Stepper/Stepper'
 
-export default function FormDialog({ isOpen, handleClose, processfile }: any) {
+interface ModalProps {
+    isOpen: boolean
+    handleClose: () => void
+    processfile: (data: string[][], campaigns: string[]) => void
+}
+
+export default function Modal({
+    isOpen,
+    handleClose,
+    processfile,
+}: ModalProps) {
     return (
         <Dialog
             open={isOpen}

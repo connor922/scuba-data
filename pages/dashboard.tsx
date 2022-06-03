@@ -14,9 +14,9 @@ import Modal from '../components/Modal/Modal'
 import Wrapper from '../components/Wrapper/Wrapper'
 import CircularProgress from '@mui/material/CircularProgress'
 import useSWR, { useSWRConfig } from 'swr'
-import { supabase } from "../libs/initSupabase";
+import { supabase } from '../libs/initSupabase'
 
-const baseURL = process.env.NEXT_PUBLIC_FUNCTIONS_BASE_URL;
+const baseURL = process.env.NEXT_PUBLIC_FUNCTIONS_BASE_URL
 
 const fetcher = async (url: string) => {
     const res = await fetch(url)
@@ -27,30 +27,34 @@ const fetcher = async (url: string) => {
     return data
 }
 
+interface formPost {
+    user?: string
+    name: string
+    error_count: number
+    row_count: number
+    file: string
+    campaigns: string[]
+}
 
-const updateFn = async (newData: any) => {
-    await fetch(
-        "/api/dashboard/1",
-        {
-            method: 'POST',
-            headers: new Headers({
-                'Content-Type':
-                    'application/json',
-                Accept: 'application/json',
-            }),
-            body: JSON.stringify(newData),
-        }
-    )
+const updateFn = async (newData: formPost) => {
+    await fetch('/api/dashboard/1', {
+        method: 'POST',
+        headers: new Headers({
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+        }),
+        body: JSON.stringify(newData),
+    })
 }
 
 function DashboardContent() {
     const [isOpen, setIsOpen] = useState(false)
-    const [cards, setCards] = useState<any[]>([])
+    const [cards, setCards] = useState([])
     const { jsonToCSV } = usePapaParse()
     const { mutate } = useSWRConfig()
-    const [isLoading, setIsLoading] = useState(true);
-    const profile = supabase.auth.user();
-    const {data} = useSWR(`/api/dashboard/${profile?.id}`, fetcher);
+    const [isLoading, setIsLoading] = useState(true)
+    const profile = supabase.auth.user()
+    const { data } = useSWR(`/api/dashboard/${profile?.id}`, fetcher)
 
     const handleClickOpen = () => {
         setIsOpen(true)
@@ -58,7 +62,6 @@ function DashboardContent() {
     const handleClose = () => {
         setIsOpen(false)
     }
-
 
     useEffect(() => {
         if (!profile) {
@@ -97,46 +100,63 @@ function DashboardContent() {
                     <Modal
                         isOpen={isOpen}
                         handleClose={handleClose}
-                        processfile={async ({data:newData, campaigns}: any) => {
+                        processfile={async (
+                            newData: string[][],
+                            campaigns: string[]
+                        ) => {
                             const fomattedData = await fetch(
-                                (baseURL? baseURL+'/':'' )+ "api/updatedata",
+                                (baseURL ? baseURL + '/' : '') +
+                                    'api/updatedata',
                                 {
                                     method: 'POST',
                                     headers: new Headers({
-                                        'Content-Type':
-                                            'application/json',
+                                        'Content-Type': 'application/json',
                                         Accept: 'application/json',
                                     }),
                                     body: JSON.stringify(newData),
                                 }
                             )
-                            
+
                             const score = await fomattedData.json()
 
                             console.log(score)
                             handleClose()
 
                             const newTodo = {
-                                user:profile?.id,
+                                user: profile?.id,
                                 name: newData[0][0],
                                 error_count: 5,
                                 row_count: newData.length,
-                                file: jsonToCSV(newData.map((array: any) => {
-                                    const b: any = {}
-    
-                                    array.forEach((element: any, index: any) => {
-                                        b[`column ${index}`] = element
-                                            .split('')
-                                            .reverse()
-                                            .join('')
+                                file: jsonToCSV(
+                                    newData.map((array: string[]) => {
+                                        const b: any = {}
+
+                                        array.forEach(
+                                            (
+                                                element: string,
+                                                index: number
+                                            ) => {
+                                                b[`column ${index}`] = element
+                                                    .split('')
+                                                    .reverse()
+                                                    .join('')
+                                            }
+                                        )
+
+                                        return b
                                     })
-    
-                                    return b
-                                })),
-                                campaigns:campaigns
+                                ),
+                                campaigns: campaigns,
                             }
 
-                            mutate(`/api/dashboard/${profile?.id}`, updateFn(newTodo), { optimisticData: [...data, newTodo], rollbackOnError: true });
+                            mutate(
+                                `/api/dashboard/${profile?.id}`,
+                                updateFn(newTodo),
+                                {
+                                    optimisticData: [...data, newTodo],
+                                    rollbackOnError: true,
+                                }
+                            )
                         }}
                     />
 
@@ -152,7 +172,7 @@ function DashboardContent() {
                                 minHeight: '60vh',
                             }}
                         >
-                            {cards.map((cards: any, index: any) => {
+                            {cards.map((cards: formPost, index: number) => {
                                 const { error_count, name, row_count, file } =
                                     cards
                                 return (

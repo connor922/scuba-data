@@ -179,7 +179,7 @@ export default function HorizontalLinearStepper({
     keywords,
     companysList,
     jobTitles,
-    sendToArchive
+    sendToArchive,
 }: any) {
     const [companyList, setCompanyList] = useState('')
     const [jobTitle, setJobTitle] = useState('')
@@ -234,10 +234,7 @@ export default function HorizontalLinearStepper({
                     <ToggleButton value="LIVE">LIVE</ToggleButton>
                     <ToggleButton value="INACTIVE">INACTIVE</ToggleButton>
                 </ToggleButtonGroup>
-                <Button
-                    variant="contained"
-                    onClick={sendToArchive}
-                >
+                <Button variant="contained" onClick={sendToArchive}>
                     Archive
                 </Button>
             </AccordionSummary>
@@ -288,34 +285,38 @@ export default function HorizontalLinearStepper({
                                 }}
                                 onKeyPress={(ev) => {
                                     if (ev.key === 'Enter') {
-                                      // Do code here
-                                      ev.preventDefault();
-                                      setState((prevstate: any) => {
-                                        return prevstate.map((long: any) => {
-                                            let data = {
-                                                ...long,
-                                            }
+                                        // Do code here
+                                        ev.preventDefault()
+                                        setState((prevstate: any) => {
+                                            return prevstate.map(
+                                                (long: any) => {
+                                                    let data = {
+                                                        ...long,
+                                                    }
 
-                                            if (long.id === id) {
-                                                data = {
-                                                    ...data,
-                                                    keywords: [
-                                                        ...data.keywords,
-                                                        {
-                                                            id: data.keywords
-                                                                .length,
-                                                            name: keyword,
-                                                            isIncluded: true,
-                                                        },
-                                                    ],
+                                                    if (long.id === id) {
+                                                        data = {
+                                                            ...data,
+                                                            keywords: [
+                                                                ...data.keywords,
+                                                                {
+                                                                    id: data
+                                                                        .keywords
+                                                                        .length,
+                                                                    name: keyword,
+                                                                    isIncluded:
+                                                                        true,
+                                                                },
+                                                            ],
+                                                        }
+                                                    }
+
+                                                    return data
                                                 }
-                                            }
-
-                                            return data
+                                            )
                                         })
-                                    })
                                     }
-                                  }}
+                                }}
                             />
                             <Button
                                 onClick={() => {
@@ -397,34 +398,38 @@ export default function HorizontalLinearStepper({
                                 }}
                                 onKeyPress={(ev) => {
                                     if (ev.key === 'Enter') {
-                                      // Do code here
-                                      ev.preventDefault();
-                                      setState((prevstate: any) => {
-                                        return prevstate.map((long: any) => {
-                                            let data = {
-                                                ...long,
-                                            }
+                                        // Do code here
+                                        ev.preventDefault()
+                                        setState((prevstate: any) => {
+                                            return prevstate.map(
+                                                (long: any) => {
+                                                    let data = {
+                                                        ...long,
+                                                    }
 
-                                            if (long.id === id) {
-                                                data = {
-                                                    ...data,
-                                                    jobTitles: [
-                                                        ...data.jobTitles,
-                                                        {
-                                                            id: data.jobTitles
-                                                                .length,
-                                                            name: jobTitle,
-                                                            isIncluded: true,
-                                                        },
-                                                    ],
+                                                    if (long.id === id) {
+                                                        data = {
+                                                            ...data,
+                                                            jobTitles: [
+                                                                ...data.jobTitles,
+                                                                {
+                                                                    id: data
+                                                                        .jobTitles
+                                                                        .length,
+                                                                    name: jobTitle,
+                                                                    isIncluded:
+                                                                        true,
+                                                                },
+                                                            ],
+                                                        }
+                                                    }
+
+                                                    return data
                                                 }
-                                            }
-
-                                            return data
+                                            )
                                         })
-                                    })
                                     }
-                                  }}
+                                }}
                             />
                             <Button
                                 onClick={() => {
@@ -500,34 +505,35 @@ export default function HorizontalLinearStepper({
                             }}
                             onKeyPress={(ev) => {
                                 if (ev.key === 'Enter') {
-                                  // Do code here
-                                  ev.preventDefault();
-                                  setState((prevstate: any) => {
-                                    return prevstate.map((long: any) => {
-                                        let data = {
-                                            ...long,
-                                        }
-
-                                        if (long.id === id) {
-                                            data = {
-                                                ...data,
-                                                companysList: [
-                                                    ...data.companysList,
-                                                    {
-                                                        id: data.companysList
-                                                            .length,
-                                                        name: companyList,
-                                                        isIncluded: true,
-                                                    },
-                                                ],
+                                    // Do code here
+                                    ev.preventDefault()
+                                    setState((prevstate: any) => {
+                                        return prevstate.map((long: any) => {
+                                            let data = {
+                                                ...long,
                                             }
-                                        }
 
-                                        return data
+                                            if (long.id === id) {
+                                                data = {
+                                                    ...data,
+                                                    companysList: [
+                                                        ...data.companysList,
+                                                        {
+                                                            id: data
+                                                                .companysList
+                                                                .length,
+                                                            name: companyList,
+                                                            isIncluded: true,
+                                                        },
+                                                    ],
+                                                }
+                                            }
+
+                                            return data
+                                        })
                                     })
-                                })
                                 }
-                              }}
+                            }}
                         />
                         <Button
                             onClick={() => {

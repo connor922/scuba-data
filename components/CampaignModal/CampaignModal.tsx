@@ -1,13 +1,21 @@
-import Dialog from '@mui/material/Dialog'
-import DialogContent from '@mui/material/DialogContent'
-import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import TextField from '@mui/material/TextField'
 import { useState } from 'react'
 
-import DialogTitle from '@mui/material/DialogTitle'
-
-export default function CampaignModal({ isOpen, handleClose, onSubmit }: any) {
+interface CampaignModalProps {
+    isOpen: boolean
+    handleClose: () => void
+    onSubmit: (name: string) => void
+}
+export default function CampaignModal({
+    isOpen,
+    handleClose,
+    onSubmit,
+}: CampaignModalProps) {
     const [name, setName] = useState('')
 
     return (

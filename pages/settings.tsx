@@ -9,7 +9,7 @@ import Wrapper from '../components/Wrapper/Wrapper'
 import Accord from '../components/Accord/Accord'
 import CircularProgress from '@mui/material/CircularProgress'
 import { useSWRConfig } from 'swr'
-import { supabase } from "../libs/initSupabase";
+import { supabase } from '../libs/initSupabase'
 import useSWR from 'swr'
 
 const fetcher = async (url: string) => {
@@ -22,48 +22,38 @@ const fetcher = async (url: string) => {
 }
 
 const updateFn = async (newData: any) => {
-    await fetch(
-        `/api/settings/${newData.user}`,
-        {
-            method: 'POST',
-            headers: new Headers({
-                'Content-Type':
-                    'application/json',
-                Accept: 'application/json',
-            }),
-            body: JSON.stringify(newData),
-        }
-    )
+    await fetch(`/api/settings/${newData.user}`, {
+        method: 'POST',
+        headers: new Headers({
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+        }),
+        body: JSON.stringify(newData),
+    })
 }
 
 const archieveSetting = async (id: any) => {
-    await fetch(
-        `/api/settings/archieve`,
-        {
-            method: 'POST',
-            headers: new Headers({
-                'Content-Type':
-                    'application/json',
-                Accept: 'application/json',
-            }),
-            body: id,
-        }
-    )
+    await fetch(`/api/settings/archieve`, {
+        method: 'POST',
+        headers: new Headers({
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+        }),
+        body: id,
+    })
 }
-
 
 function Settings() {
     const [expanded, setExpanded] = useState('')
     const [state, setState] = useState<any[]>([])
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
-    const profile = supabase.auth.user();
+    const profile = supabase.auth.user()
 
     const result = useSWR(`/api/settings/${profile?.id}`, fetcher)
     const data = result.data
 
     const { mutate } = useSWRConfig()
-
 
     const handleClickOpen = () => {
         setIsOpen(true)
@@ -90,7 +80,7 @@ function Settings() {
             <CampaignModal
                 isOpen={isOpen}
                 handleClose={handleClose}
-                onSubmit={(name:string) => {
+                onSubmit={(name: string) => {
                     const newTodo = {
                         id: null,
                         name: name,
@@ -99,10 +89,13 @@ function Settings() {
                         keywords: [],
                         companysList: [],
                         jobTitles: [],
-                        user:profile?.id
+                        user: profile?.id,
                     }
 
-                    mutate(`/api/settings/${profile?.id}`, updateFn(newTodo), { optimisticData: [...data, newTodo], rollbackOnError: true });
+                    mutate(`/api/settings/${profile?.id}`, updateFn(newTodo), {
+                        optimisticData: [...data, newTodo],
+                        rollbackOnError: true,
+                    })
 
                     handleClose()
                 }}
@@ -161,9 +154,21 @@ function Settings() {
                                         handleChange={handleChange}
                                         name={item.name}
                                         state={item.state}
-                                        sendToArchive={async()=>{
-                                            const newData = data.filter((post:any)=> post.id !== item.id);
-                                            mutate(`/api/settings/${profile?.id}`, archieveSetting(item.id), { optimisticData: [...newData], rollbackOnError: true });
+                                        sendToArchive={async () => {
+                                            const newData = data.filter(
+                                                (post: any) =>
+                                                    post.id !== item.id
+                                            )
+                                            mutate(
+                                                `/api/settings/${profile?.id}`,
+                                                archieveSetting(item.id),
+                                                {
+                                                    optimisticData: [
+                                                        ...newData,
+                                                    ],
+                                                    rollbackOnError: true,
+                                                }
+                                            )
                                         }}
                                     />
                                 )

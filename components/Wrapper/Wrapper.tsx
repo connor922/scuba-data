@@ -18,8 +18,8 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import { styled } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
-import { Fragment, useState } from 'react'
-import { supabase } from "../../libs/initSupabase";
+import React, { Fragment, useState } from 'react'
+import { supabase } from '../../libs/initSupabase'
 import { useRouter } from 'next/router'
 
 const drawerWidth = 240
@@ -97,25 +97,29 @@ export const secondaryListItems = (
     </Fragment>
 )
 
-export default function Wrapper({ pageName }: any) {
+interface WrapperProps {
+    pageName: string
+}
+
+export default function Wrapper({ pageName }: WrapperProps) {
     const [open, setOpen] = useState(false)
-    const router = useRouter();
+    const router = useRouter()
 
     const toggleDrawer = () => {
         setOpen(!open)
     }
 
-    const handleLogOut = async (e:any) => {
-        e.preventDefault();
-    
-        const { error } = await supabase.auth.signOut();
-    
+    const handleLogOut = async (
+        e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    ) => {
+        const { error } = await supabase.auth.signOut()
+
         if (error) {
-          alert(JSON.stringify(error));
+            alert(JSON.stringify(error))
         } else {
-          router.push('/');
+            router.push('/')
         }
-      };
+    }
 
     return (
         <>
@@ -161,12 +165,12 @@ export default function Wrapper({ pageName }: any) {
                         </Link>
                     </Box>
                     <IconButton
-                edge="start"
-                color="inherit"
-                onClick={handleLogOut}
-            >
-                <LogoutIcon />
-            </IconButton>
+                        edge="start"
+                        color="inherit"
+                        onClick={handleLogOut}
+                    >
+                        <LogoutIcon />
+                    </IconButton>
                 </Toolbar>
             </AppBar>
             <Drawer variant="permanent" open={open}>

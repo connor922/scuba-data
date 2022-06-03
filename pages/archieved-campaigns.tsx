@@ -8,7 +8,7 @@ import CampaignModal from '../components/CampaignModal/CampaignModal'
 import Wrapper from '../components/Wrapper/Wrapper'
 import Accord from '../components/Accord/Accord'
 import CircularProgress from '@mui/material/CircularProgress'
-import { supabase } from "../libs/initSupabase";
+import { supabase } from '../libs/initSupabase'
 
 import useSWR from 'swr'
 
@@ -24,8 +24,8 @@ const fetcher = async (url: string) => {
 function Settings() {
     const [expanded, setExpanded] = useState('')
     const [state, setState] = useState<any[]>([])
-    const [isLoading, setIsLoading] = useState(true);
-    const profile = supabase.auth.user();
+    const [isLoading, setIsLoading] = useState(true)
+    const profile = supabase.auth.user()
 
     const result = useSWR(`/api/settings/${profile?.id}`, fetcher)
     const data = result.data

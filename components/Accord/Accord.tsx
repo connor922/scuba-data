@@ -12,77 +12,66 @@ import AddIcon from '@mui/icons-material/Add'
 import { useState } from 'react'
 import { useCSVReader } from 'react-papaparse'
 
-
 interface item {
-    name: string,
-    isIncluded: boolean,
+    name: string
+    isIncluded: boolean
 }
 interface campaign {
-    name: string,
-    state: string,
-    seniorites: item[],
-    keywords: item[],
-    companysList: item[],
-    jobTitles: item[],
+    user: string
+    id: string
+    name: string
+    state: string
+    seniorites: item[]
+    keywords: item[]
+    companysList: item[]
+    jobTitles: item[]
 }
 
 interface ListProps {
-    items: item[],
-    filterProp: string,
-    newState: boolean,
-    setState: (items: item[]) => void,
-    colour: string,
+    items: item[]
+    a: item
+    filterProp: string
+    newState: boolean
+    setState: (items: item[]) => void
+    colour: string
 }
 
-
-function List({
-    items,
-    filterProp,
-    newState,
-    setState,
-    colour,
-}: ListProps) {
-
-    return items
-        .filter((a: any) => a[filterProp] === newState)
-        .map((a: item) => {
-            return (
-                <Chip
-                    key={a.name}
-                    sx={{
-                        bgcolor: `${colour}`,
-                        color: 'white',
-                    }}
-                    label={a.name}
-                    onClick={() => {
-                        const newItems = items.map((item: item) => {
-                            if (a.name === item.name) {
-                                return {
-                                    ...item,
-                                    [filterProp]: !newState,
-                                }
-                            }
-                            return item
-                        })
-                        setState(newItems)
-                    }}
-                    onDelete={() => {
-                        const newItems = items.filter((item: item) => {
-                            return a.name !== item.name
-                        })
-                        setState(newItems)
-                    }}
-                />
-            )
-        })
+function List({ items, a, filterProp, newState, setState, colour }: ListProps) {
+    return (
+        <Chip
+            key={a.name}
+            sx={{
+                bgcolor: `${colour}`,
+                color: 'white',
+            }}
+            label={a.name}
+            onClick={() => {
+                const newItems = items.map((item: item) => {
+                    if (a.name === item.name) {
+                        return {
+                            ...item,
+                            [filterProp]: !newState,
+                        }
+                    }
+                    return item
+                })
+                setState(newItems)
+            }}
+            onDelete={() => {
+                const newItems = items.filter((item: item) => {
+                    return a.name !== item.name
+                })
+                setState(newItems)
+            }}
+        />
+    )
 }
 
 interface ItemProps {
-    items: item[],
-    label: string,
-    updateData: (items: item[]) => void,
+    items: item[]
+    label: string
+    updateData: (items: item[]) => void
 }
-
 
 function Item({ label, updateData, items }: ItemProps) {
     const [senority, setSenority] = useState<string>('')
@@ -114,40 +103,40 @@ function Item({ label, updateData, items }: ItemProps) {
                     onKeyPress={(ev) => {
                         if (ev.key === 'Enter') {
                             ev.preventDefault()
-                            updateData([...items, {
-                                name: senority,
-                                isIncluded: true,
-                            }])
-                            setSenority("")
+                            updateData([
+                                ...items,
+                                {
+                                    name: senority,
+                                    isIncluded: true,
+                                },
+                            ])
+                            setSenority('')
                         }
                     }}
                 />
                 <Button
                     onClick={() => {
-                        updateData([...items, {
-                            name: senority,
-                            isIncluded: true,
-                        }])
-                        setSenority("")
+                        updateData([
+                            ...items,
+                            {
+                                name: senority,
+                                isIncluded: true,
+                            },
+                        ])
+                        setSenority('')
                     }}
                 >
                     Add
                 </Button>
                 <CSVReader
                     onUploadAccepted={(results: { data: string[][] }) => {
-
                         const newData = results.data.slice(1)
                         const newItems = newData.reduce(
-                            (
-                                memo: any,
-                                b: string[],
-                                index: number
-                            ) => {
+                            (memo: item[], b: string[]) => {
                                 if (b.length == 2) {
                                     memo.push({
                                         name: b[0],
-                                        isIncluded:
-                                            b[1] === 'TRUE',
+                                        isIncluded: b[1] === 'TRUE',
                                     })
                                 }
 
@@ -178,33 +167,45 @@ function Item({ label, updateData, items }: ItemProps) {
                     flexWrap: 'wrap',
                 }}
             >
-                <List
-                    items={items}
-                    filterProp="isIncluded"
-                    newState={true}
-                    setState={setState}
-                    colour="green"
-                />
-                <List
-                    items={items}
-                    filterProp="isIncluded"
-                    newState={false}
-                    setState={setState}
-                    colour="crimson"
-                />
+                {items
+                    .filter((a: item) => a.isIncluded)
+                    .map((a: item) => (
+                        <List
+                            key={a.name}
+                            a={a}
+                            items={items}
+                            filterProp="isIncluded"
+                            newState={true}
+                            setState={setState}
+                            colour="green"
+                        />
+                    ))}
+
+                {items
+                    .filter((a: item) => !a.isIncluded)
+                    .map((a: item) => (
+                        <List
+                            key={a.name}
+                            a={a}
+                            items={items}
+                            filterProp="isIncluded"
+                            newState={false}
+                            setState={setState}
+                            colour="crimson"
+                        />
+                    ))}
             </div>
         </Box>
     )
 }
 
 interface AccordProps {
-    isExpanded: boolean,
-    handleChange: () => void,
-    item: campaign,
-    updateData: (items: campaign) => void,
-    sendToArchive: () => void,
+    isExpanded: boolean
+    handleChange: (item: string) => void
+    item: campaign
+    updateData: (items: campaign) => void
+    sendToArchive: () => void
 }
-
 
 export default function Accord({
     isExpanded,
@@ -213,7 +214,6 @@ export default function Accord({
     updateData,
     sendToArchive,
 }: AccordProps) {
-
     return (
         <Accordion expanded={isExpanded} onChange={handleChange}>
             <AccordionSummary

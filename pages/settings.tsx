@@ -12,6 +12,22 @@ import { useSWRConfig } from 'swr'
 import { supabase } from '../libs/initSupabase'
 import useSWR from 'swr'
 
+interface item {
+    name: string
+    isIncluded: boolean
+}
+
+interface campaign {
+    user: string
+    id: string
+    name: string
+    state: string
+    seniorites: item[]
+    keywords: item[]
+    companysList: item[]
+    jobTitles: item[]
+}
+
 const fetcher = async (url: string) => {
     const res = await fetch(url)
     if (!res.ok) {
@@ -21,7 +37,7 @@ const fetcher = async (url: string) => {
     return data
 }
 
-const updateData = async (newData: any) => {
+const updateData = async (newData: campaign) => {
     await fetch(`/api/settings/update`, {
         method: 'POST',
         headers: new Headers({
@@ -32,7 +48,7 @@ const updateData = async (newData: any) => {
     })
 }
 
-const updateFn = async (newData: any) => {
+const updateFn = async (newData: campaign) => {
     await fetch(`/api/settings/${newData.user}`, {
         method: 'POST',
         headers: new Headers({
@@ -43,7 +59,7 @@ const updateFn = async (newData: any) => {
     })
 }
 
-const archieveSetting = async (id: any) => {
+const archieveSetting = async (id: string) => {
     await fetch(`/api/settings/archieve`, {
         method: 'POST',
         headers: new Headers({
@@ -56,7 +72,7 @@ const archieveSetting = async (id: any) => {
 
 function Settings() {
     const [expanded, setExpanded] = useState('')
-    const [state, setState] = useState<any[]>([])
+    const [state, setState] = useState<campaign[]>([])
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const profile = supabase.auth.user()
@@ -73,15 +89,15 @@ function Settings() {
         setIsOpen(false)
     }
 
-    const handleChange = (event: any) => {
-        setExpanded((prevstate: any) => {
+    const handleChange = (event: string) => {
+        setExpanded((prevstate: string) => {
             return event == prevstate ? '' : event
         })
     }
 
     useEffect(() => {
         if (data) {
-            setState(data.filter((a: any) => a.state !== 'ARCHIVED'))
+            setState(data.filter((a: campaign) => a.state !== 'ARCHIVED'))
             setIsLoading(false)
         }
     }, [data])
@@ -93,14 +109,14 @@ function Settings() {
                 handleClose={handleClose}
                 onSubmit={(name: string) => {
                     const newTodo = {
-                        id: null,
+                        id: '',
                         name: name,
                         state: 'LIVE',
                         seniorites: [],
                         keywords: [],
                         companysList: [],
                         jobTitles: [],
-                        user: profile?.id,
+                        user: profile?.id || '',
                     }
 
                     mutate(`/api/settings/${profile?.id}`, updateFn(newTodo), {
@@ -149,40 +165,40 @@ function Settings() {
                         }}
                     >
                         {!isLoading ? (
-                            state.map((item: any) => {
+                            state.map((item: campaign) => {
                                 return (
                                     <Accord
                                         key={item.id}
-                                        updateData={
-                                            async (updatedsetting) => {
-                                                const newData = state.map(
-                                                    (post: any) => {
-                                                        if (post.id === item.id) {
-                                                            return updatedsetting
-                                                        }
-                                                        return post
+                                        updateData={async (updatedsetting) => {
+                                            const newData = state.map(
+                                                (post: campaign) => {
+                                                    if (post.id === item.id) {
+                                                        return updatedsetting
                                                     }
-                                                )
-                                                mutate(
-                                                    `/api/settings/${profile?.id}`,
-                                                    updateData(updatedsetting),
-                                                    {
-                                                        optimisticData: [
-                                                            ...newData,
-                                                        ],
-                                                        rollbackOnError: true,
-                                                    }
-                                                )
-                                            }
-                                        }
+                                                    return post
+                                                }
+                                            )
+                                            mutate(
+                                                `/api/settings/${profile?.id}`,
+                                                updateData(updatedsetting),
+                                                {
+                                                    optimisticData: [
+                                                        ...newData,
+                                                    ],
+                                                    rollbackOnError: true,
+                                                }
+                                            )
+                                        }}
                                         item={item}
                                         isExpanded={
                                             expanded == item.id?.toString()
                                         }
-                                        handleChange={() => handleChange(item.id)}
+                                        handleChange={() =>
+                                            handleChange(item.id)
+                                        }
                                         sendToArchive={async () => {
                                             const newData = data.filter(
-                                                (post: any) =>
+                                                (post: campaign) =>
                                                     post.id !== item.id
                                             )
                                             mutate(

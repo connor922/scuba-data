@@ -18,6 +18,10 @@ import { supabase } from '../libs/initSupabase'
 
 const baseURL = process.env.NEXT_PUBLIC_FUNCTIONS_BASE_URL
 
+interface obje {
+    [key: string]: string
+}
+
 const fetcher = async (url: string) => {
     const res = await fetch(url)
     if (!res.ok) {
@@ -129,7 +133,7 @@ function DashboardContent() {
                                 row_count: newData.length,
                                 file: jsonToCSV(
                                     newData.map((array: string[]) => {
-                                        const b: any = {}
+                                        const b: obje = {}
 
                                         array.forEach(
                                             (

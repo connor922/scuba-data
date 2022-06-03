@@ -23,15 +23,15 @@ const fetcher = async (url: string) => {
 
 function Settings() {
     const [expanded, setExpanded] = useState('')
-    const [state, setState] = useState<any[]>([])
+    const [state, setState] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const profile = supabase.auth.user()
 
     const result = useSWR(`/api/settings/${profile?.id}`, fetcher)
     const data = result.data
 
-    const handleChange = (event: any) => {
-        setExpanded((prevstate: any) => {
+    const handleChange = (event: string) => {
+        setExpanded((prevstate: string) => {
             return event == prevstate ? '' : event
         })
     }
@@ -71,25 +71,16 @@ function Settings() {
                         }}
                     >
                         {!isLoading ? (
-                            state.map((item: any) => {
-                                return (
-                                    <Accord
-                                        key={item.id}
-                                        setState={setState}
-                                        seniorites={item.seniorites}
-                                        keywords={item.keywords}
-                                        companysList={item.companysList}
-                                        jobTitles={item.jobTitles}
-                                        isExpanded={
-                                            expanded == item.id.toString()
-                                        }
-                                        id={item.id}
-                                        handleChange={handleChange}
-                                        name={item.name}
-                                        state={item.state}
-                                    />
-                                )
-                            })
+                            state.map((item: any) => (
+                                <Accord
+                                    key={item.id}
+                                    updateData={() => {}}
+                                    item={item}
+                                    isExpanded={expanded == item.id?.toString()}
+                                    handleChange={() => handleChange(item.id)}
+                                    sendToArchive={() => {}}
+                                />
+                            ))
                         ) : (
                             <Box
                                 sx={{

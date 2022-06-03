@@ -1,6 +1,22 @@
 import { NextApiHandler } from 'next'
 import { supabase } from '../../libs/initSupabase'
 
+interface item {
+    name: string
+    isIncluded: boolean
+}
+
+interface campaign {
+    user: string
+    id: string
+    name: string
+    state: string
+    seniorites: item[]
+    keywords: item[]
+    companysList: item[]
+    jobTitles: item[]
+}
+
 const user: NextApiHandler = async (req, res) => {
     const { id } = req.query
 

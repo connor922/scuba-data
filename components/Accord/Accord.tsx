@@ -201,7 +201,7 @@ function Item({ label, updateData, items }: ItemProps) {
 
 interface AccordProps {
     isExpanded: boolean
-    handleChange: (item: string) => void
+    handleChange: () => void
     item: campaign
     updateData: (items: campaign) => void
     sendToArchive: () => void

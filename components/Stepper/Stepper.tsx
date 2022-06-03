@@ -57,7 +57,12 @@ export default function LineStepper({ onClose }: StepperProps) {
                 </Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                     <Box sx={{ flex: '1 1 auto' }} />
-                    <Button onClick={() => onClose(state, campaigns)}>
+                    <Button onClick={() => {
+                        const campaignData = data.find((cam: any) => {
+                            return cam.id === campaigns[0]
+                        })
+                        onClose(state, campaignData)
+                    }}>
                         Calculate
                     </Button>
                 </Box>

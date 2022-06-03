@@ -38,7 +38,10 @@ interface formPost {
     error_count: number
     row_count: number
     file: string
-    campaigns: string[]
+    campaigns: string[],
+    high: number,
+    medium: number,
+    low: number
 }
 
 const updateFn = async (newData: formPost) => {
@@ -107,8 +110,24 @@ function DashboardContent() {
                         handleClose={handleClose}
                         processfile={async (
                             newData: string[][],
-                            campaigns: string[]
+                            campaigns: any
                         ) => {
+                            const jobtitles = newData.reduce((memo, val) => {
+                                memo.push(val[0])
+                                return memo;
+                            }, [])
+
+
+
+                            //const jobtitles = ['head of it', 'Director of Finance', 'Director of IT Human Resources', 'Associate Director of IT & Cloud', 'Global Head of IT and government services and something like this'];
+                            const kw = campaigns.keywords.filter((a: any) => a.isIncluded).map((a: any) => a.name);
+                            const exclude_kw = campaigns.keywords.filter((a: any) => !a.isIncluded).map((a: any) => a.name);
+                            const sen = campaigns.seniorites.filter((a: any) => a.isIncluded).map((a: any) => a.name);
+                            const exclude_sen: string[] = campaigns.seniorites.filter((a: any) => a.isIncluded).map((a: any) => a.name);
+                            const jt: string[] = campaigns.jobTitles.filter((a: any) => a.isIncluded).map((a: any) => a.name);
+                            const exclude_jt: string[] = campaigns.jobTitles.filter((a: any) => a.isIncluded).map((a: any) => a.name);
+                            debugger;
+
                             const fomattedData = await fetch(
                                 (baseURL ? baseURL + '/' : '') +
                                 'api/updatedata',
@@ -118,19 +137,49 @@ function DashboardContent() {
                                         'Content-Type': 'application/json',
                                         Accept: 'application/json',
                                     }),
-                                    body: JSON.stringify(newData),
+                                    body: JSON.stringify({
+                                        jobtitles: jobtitles,
+                                        kw: kw,
+                                        exclude_kw: exclude_kw,
+                                        sen: sen,
+                                        exclude_sen: exclude_sen,
+                                        jt: jt,
+                                        exclude_jt: exclude_jt
+                                    }
+                                    ),
                                 }
                             )
-
                             const score = await fomattedData.json()
+
+                            const jobs: any = score.a;
+                            const conan = Object.values(jobs)
+                            const finalResults: any = conan.reduce((memo: any, job: any) => {
+
+                                if (job == "No match" || job == 'Exclude') {
+                                    memo.high = memo.high + 1;
+                                } else if (job == "Clean match" || job == 'Strong match') {
+                                    memo.medium = memo.medium + 1;
+
+                                } else {
+                                    memo.low = memo.low + 1;
+                                }
+                                return memo;
+                            }, { high: 0, medium: 0, low: 0 })
+
+                            debugger;
 
                             console.log(score)
                             handleClose()
 
+
+
                             const newTodo = {
+                                high: Math.round(finalResults.high / conan.length) * 100,
+                                medium: Math.round(finalResults.medium / conan.length) * 100,
+                                low: Math.round(finalResults.low / conan.length) * 100,
                                 user: profile?.id,
                                 name: newData[0][0],
-                                error_count: 5,
+                                error_count: 0,
                                 row_count: newData.length,
                                 file: jsonToCSV(
                                     newData.map((array: string[]) => {
@@ -151,7 +200,7 @@ function DashboardContent() {
                                         return b
                                     })
                                 ),
-                                campaigns: campaigns,
+                                campaigns: [campaigns.id.toString()],
                             }
 
                             mutate(
@@ -178,7 +227,7 @@ function DashboardContent() {
                             }}
                         >
                             {cards.length > 0 ? cards.map((cards: formPost, index: number) => {
-                                const { error_count, name, row_count, file } =
+                                const { error_count, name, row_count, file, high, medium, low } =
                                     cards
                                 return (
                                     <Card key={index} sx={{ mb: '2rem' }}>
@@ -233,7 +282,7 @@ function DashboardContent() {
                                                         paddingTop: '2px',
                                                     }}
                                                 >
-                                                    20%
+                                                    {high}%
                                                 </Avatar>
                                                 <Avatar
                                                     sx={{
@@ -243,7 +292,7 @@ function DashboardContent() {
                                                         paddingTop: '2px',
                                                     }}
                                                 >
-                                                    40%
+                                                    {medium}%
                                                 </Avatar>
                                                 <Avatar
                                                     sx={{
@@ -253,7 +302,7 @@ function DashboardContent() {
                                                         paddingTop: '2px',
                                                     }}
                                                 >
-                                                    40%
+                                                    {low}%
                                                 </Avatar>
                                             </div>
                                             <Button

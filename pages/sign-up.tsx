@@ -48,7 +48,7 @@ export default function SignUp() {
         event.preventDefault()
         const data = new FormData(event.currentTarget)
         const mail = (data.get('email') as string) || ''
-        const password = (data.get('email') as string) || ''
+        const password = (data.get('password') as string) || ''
 
         const { user, session, error } = await supabase.auth.signUp({
             email: mail.trim(),

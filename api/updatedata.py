@@ -2,9 +2,9 @@ from http.server import BaseHTTPRequestHandler
 import re
 from collections import Counter
 import math
-from unidecode import Unidecode
 import json
 import simplejson
+from unidecode import unidecode
 
 
 class JobTitleMatch:
@@ -24,19 +24,19 @@ class JobTitleMatch:
 
         # same as above but without punctuation, lowercase, and with english characters
         self.jobtitles_clean = [
-            Unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in jobtitles]
+            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in jobtitles]
         self.kw_clean = [
-            Unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in kw]
+            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in kw]
         self.exclude_kw_clean = [
-            Unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in exclude_kw]
+            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in exclude_kw]
         self.sen_clean = [
-            Unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in sen]
+            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in sen]
         self.exclude_sen_clean = [
-            Unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in exclude_sen]
+            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in exclude_sen]
         self.jt_clean = [
-            Unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in jt]
+            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in jt]
         self.exclude_jt_clean = [
-            Unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in exclude_jt]
+            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in exclude_jt]
 
     def remove_filler_words_from_jts(self):
 
@@ -246,11 +246,11 @@ class CompanyMatch(JobTitleMatch):
 
         # same as above but without punctuation, lowercase, and with english characters
         self.companies_clean = [
-            Unidecode(re.sub(r'[\W_]+ ', " ", j)).lower() for j in companies]
+            unidecode(re.sub(r'[\W_]+ ', " ", j)).lower() for j in companies]
         self.targets_clean = [
-            Unidecode(re.sub(r'[\W_]+ ', " ", j)).lower() for j in targets]
+            unidecode(re.sub(r'[\W_]+ ', " ", j)).lower() for j in targets]
         self.exclude_clean = [
-            Unidecode(re.sub(r'[\W_]+ ', " ", j)).lower() for j in exclude]
+            unidecode(re.sub(r'[\W_]+ ', " ", j)).lower() for j in exclude]
 
     def remove_company_extensions(self):
 

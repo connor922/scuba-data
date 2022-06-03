@@ -65,9 +65,11 @@ export default function LineStepper({ onClose }: StepperProps) {
         )
     } else if (activeStep == 0) {
         stepContent = (
-            <>
+            <Box>
                 <Typography sx={{ mt: 2, mb: 1 }}>
                     <Stepper />
+                </Typography>
+                <Box>
                     <CSVReader
                         onUploadAccepted={(results: { data: string[][] }) => {
                             setState(results.data)
@@ -117,21 +119,21 @@ export default function LineStepper({ onClose }: StepperProps) {
                             </>
                         )}
                     </CSVReader>
-                </Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                    {activeStep !== 0 && (
-                        <Button
-                            color="inherit"
-                            onClick={handleBack}
-                            sx={{ mr: 1 }}
-                        >
-                            Back
-                        </Button>
-                    )}
-                    <Box sx={{ flex: '1 1 auto' }} />
-                    <Button onClick={handleNext}>Next</Button>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', pt: 4 }}>
+                        {activeStep !== 0 && (
+                            <Button
+                                color="inherit"
+                                onClick={handleBack}
+                                sx={{ mr: 1 }}
+                            >
+                                Back
+                            </Button>
+                        )}
+                        <Box sx={{ flex: '1 1 auto' }} />
+                        <Button onClick={handleNext} disabled={state.length === 0}>Next</Button>
+                    </Box>
                 </Box>
-            </>
+            </Box>
         )
     } else {
         stepContent = (
@@ -161,7 +163,7 @@ export default function LineStepper({ onClose }: StepperProps) {
                             Back
                         </Button>
                         <Box sx={{ flex: '1 1 auto' }} />
-                        <Button onClick={handleNext}>Next</Button>
+                        <Button onClick={handleNext} disabled={campaigns.length == 0}>Next</Button>
                     </Box>
                 </Box>
             </>
@@ -169,7 +171,11 @@ export default function LineStepper({ onClose }: StepperProps) {
     }
 
     return (
-        <Box sx={{ width: '100%' }}>
+        <Box sx={{
+            width: '100%', height: "30vh", display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between"
+        }}>
             <Stepper activeStep={activeStep}>
                 {steps.map((label) => {
                     const stepProps: { completed?: boolean } = {}

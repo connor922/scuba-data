@@ -15,6 +15,7 @@ import Wrapper from '../components/Wrapper/Wrapper'
 import CircularProgress from '@mui/material/CircularProgress'
 import useSWR, { useSWRConfig } from 'swr'
 import { supabase } from '../libs/initSupabase'
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 const baseURL = process.env.NEXT_PUBLIC_FUNCTIONS_BASE_URL
 
@@ -110,7 +111,7 @@ function DashboardContent() {
                         ) => {
                             const fomattedData = await fetch(
                                 (baseURL ? baseURL + '/' : '') +
-                                    'api/updatedata',
+                                'api/updatedata',
                                 {
                                     method: 'POST',
                                     headers: new Headers({
@@ -176,7 +177,7 @@ function DashboardContent() {
                                 minHeight: '60vh',
                             }}
                         >
-                            {cards.map((cards: formPost, index: number) => {
+                            {cards.length > 0 ? cards.map((cards: formPost, index: number) => {
                                 const { error_count, name, row_count, file } =
                                     cards
                                 return (
@@ -290,7 +291,19 @@ function DashboardContent() {
                                         </CardContent>
                                     </Card>
                                 )
-                            })}
+                            }) : <Box
+                                sx={{
+                                    display: 'flex',
+                                    width: '100%',
+                                    justifyContent: 'center',
+                                    margin: "auto"
+                                }}
+                            >
+                                <AddCircleOutlineIcon sx={{
+                                    color: "#1976d2"
+                                }} />      Please upload some results
+                            </Box>
+                            }
                         </Paper>
                     ) : (
                         <Box

@@ -11,6 +11,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import { useSWRConfig } from 'swr'
 import { supabase } from '../libs/initSupabase'
 import useSWR from 'swr'
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 interface item {
     name: string
@@ -165,7 +166,7 @@ function Settings() {
                         }}
                     >
                         {!isLoading ? (
-                            state.map((item: campaign) => {
+                            state.length > 0 ? state.map((item: campaign) => {
                                 return (
                                     <Accord
                                         key={item.id}
@@ -214,7 +215,20 @@ function Settings() {
                                         }}
                                     />
                                 )
-                            })
+                            }) :
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        width: '100%',
+                                        justifyContent: 'center',
+                                        margin: "auto"
+                                    }}
+                                >
+                                    <AddCircleOutlineIcon sx={{
+                                        color: "#1976d2"
+                                    }} />      Please upload some results
+                                </Box>
+
                         ) : (
                             <Box
                                 sx={{

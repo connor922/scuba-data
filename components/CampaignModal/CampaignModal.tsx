@@ -34,6 +34,12 @@ export default function CampaignModal({
                     onChange={(event) => {
                         setName(event.target.value)
                     }}
+                    onKeyPress={(ev) => {
+                        if (ev.key === 'Enter') {
+                            ev.preventDefault()
+                            onSubmit(name)
+                        }
+                    }}
                 />
             </DialogContent>
             <DialogActions>
@@ -42,6 +48,7 @@ export default function CampaignModal({
                     onClick={() => {
                         onSubmit(name)
                     }}
+                    disabled={name.length === 0}
                 >
                     Add
                 </Button>

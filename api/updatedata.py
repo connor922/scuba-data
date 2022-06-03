@@ -1,15 +1,9 @@
 from http.server import BaseHTTPRequestHandler
-from datetime import datetime
-import math
 import re
 from collections import Counter
-import re
 import math
-from collections import Counter
 from unidecode import unidecode
 import json
-import cgi
-import ast
 import simplejson
 
 

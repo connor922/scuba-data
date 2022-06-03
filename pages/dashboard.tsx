@@ -126,7 +126,6 @@ function DashboardContent() {
                             const exclude_sen: string[] = campaigns.seniorites.filter((a: any) => a.isIncluded).map((a: any) => a.name);
                             const jt: string[] = campaigns.jobTitles.filter((a: any) => a.isIncluded).map((a: any) => a.name);
                             const exclude_jt: string[] = campaigns.jobTitles.filter((a: any) => a.isIncluded).map((a: any) => a.name);
-                            debugger;
 
                             const fomattedData = await fetch(
                                 (baseURL ? baseURL + '/' : '') +
@@ -166,7 +165,6 @@ function DashboardContent() {
                                 return memo;
                             }, { high: 0, medium: 0, low: 0 })
 
-                            debugger;
 
                             console.log(score)
                             handleClose()

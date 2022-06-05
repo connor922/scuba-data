@@ -128,57 +128,84 @@ class JobTitleMatch:
             
             high_perc = 0.00
             
-            if self.sen_clean == [] and self.kw_clean != []:
-                for i in self.kw_clean:
-                    if re.search(rf'\b{i}\b', jt):
-                        high_perc = 0.99
-                        break
-            else:
-                #Then check for matching with seniorities and keywords paired:
-                for i in self.sen_clean:
-                    if re.search(rf'\b{i}\b', jt):
-                        if i == 'director' and 'associate director' not in self.sen_clean and ('assoc' in jt or 'associate' in jt):
-                            continue
-                        if self.sen_clean != [] and self.kw_clean == []:
+            if self.sen_clean != [] or self.kw_clean != []:
+                if self.sen_clean == [] and self.kw_clean != []:
+                    for i in self.kw_clean:
+                        if re.search(rf'\b{i}\b', jt):
                             high_perc = 0.99
                             break
-                        for j in self.kw_clean:
-                            if re.search(rf'\b{j}\b', jt):
-                                keywords = []
-                                for k in self.kw_clean:
-                                    if k == j:
-                                        vector1 = self.text_to_vector(jt)
-                                        vector2 = self.text_to_vector(f'{i} {j}')
-                                        cosine = round(self.get_cosine(vector1, vector2),2)          
-                                    else:
-                                        keywords.append(k)
-                                        vector1 = self.text_to_vector(jt)
-                                        vector2 = self.text_to_vector(f'{i} {j} {" ".join(keywords)}')
-                                        cosine = round(self.get_cosine(vector1, vector2),2)    
+                else:
+                    #Then check for matching with seniorities and keywords paired:
+                    for i in self.sen_clean:
+                        if re.search(rf'\b{i}\b', jt):
+                            if i == 'director' and 'associate director' not in self.sen_clean and ('assoc' in jt or 'associate' in jt):
+                                continue
+                            if self.sen_clean != [] and self.kw_clean == []:
+                                high_perc = 0.99
+                                break
+                            for j in self.kw_clean:
+                                if re.search(rf'\b{j}\b', jt):
+                                    keywords = []
+                                    for k in self.kw_clean:
                                         
-                                    if cosine == 1.00:
-                                        high_perc = cosine
-                                        break
+                                        try:
+                                            if re.search(rf'\b{i} {j}\b', jt).start() == 0:
+                                                high_perc = 0.99
+                                        except:
+                                            try:
+                                                if re.search(rf'\b{j} {i}\b', jt).start() == 0:
+                                                    high_perc = 0.99
+                                            except:
+                                                if k == j:
+                                                    vector1 = self.text_to_vector(jt)
+                                                    vector2 = self.text_to_vector(f'{i} {j}')
+                                                    cosine = round(self.get_cosine(vector1, vector2),2)          
+                                                else:
+                                                    keywords.append(k)
+                                                    vector1 = self.text_to_vector(jt)
+                                                    vector2 = self.text_to_vector(f'{i} {j} {" ".join(keywords)}')
+                                                    cosine = round(self.get_cosine(vector1, vector2),2)    
+                                                    
+                                                if cosine == 1.00:
+                                                    high_perc = cosine
+                                                    break
+                                                
+                                                if cosine > high_perc:
+                                                    high_perc = cosine
                                     
-                                    if cosine > high_perc:
-                                        high_perc = cosine
-                                
-                        if cosine == 1.00:
-                            break
+                            if high_perc == 1.00:
+                                break
                         
             #Exact titles:
             if self.jt_clean != []:
                 for i in self.jt_clean:
-                    vector1 = self.text_to_vector(jt)
-                    vector2 = self.text_to_vector(i)
-                    cosine = round(self.get_cosine(vector1, vector2),2)
                     
-                    if cosine == 1.00:
-                        high_perc = cosine
-                        break
+                    try:
+                        if re.search(rf'\b{i}\b', jt).start() == 0:
+                            high_perc = 0.99
+                    except:
+                        check_words = ['associate', 'assoc', 'global head', 'group head', 'general manager']
+                        check = False
+                        
+                        for j in check_words:
+                            if re.search(rf'\b{j}\b', jt) and re.search(rf'\b{j}\b', i):
+                                continue
+                            else:
+                                high_perc = 0.00
+                                check = True
+                                break
                     
-                    if cosine > high_perc:
-                        high_perc = cosine
+                    if check == False:
+                        vector1 = self.text_to_vector(jt)
+                        vector2 = self.text_to_vector(i)
+                        cosine = round(self.get_cosine(vector1, vector2),2)
+                        
+                        if cosine == 1.00:
+                            high_perc = cosine
+                            break
+                        
+                        if cosine > high_perc:
+                            high_perc = cosine
             
             #Exclusion checker - set to 2.00 if found:
             if high_perc != 0.00 and exclude != [] and self.exclude_jt_clean != []:
@@ -235,9 +262,9 @@ class CompanyMatch(JobTitleMatch):
         self.exclude = exclude
         
         #same as above but without punctuation, lowercase, and with english characters
-        self.companies_clean = [unidecode(re.sub(r'[\W_]+ ', " ", j)).lower() for j in companies]
-        self.targets_clean = [unidecode(re.sub(r'[\W_]+ ', " ", j)).lower() for j in targets]
-        self.exclude_clean = [unidecode(re.sub(r'[\W_]+ ', " ", j)).lower() for j in exclude]
+        self.companies_clean = [unidecode(re.sub(r'[\W_]+ ', " ", j)).lower().strip() for j in companies]
+        self.targets_clean = [unidecode(re.sub(r'[\W_]+ ', " ", j)).lower().strip() for j in targets]
+        self.exclude_clean = [unidecode(re.sub(r'[\W_]+ ', " ", j)).lower().strip() for j in exclude]
         
     def remove_company_extensions(self):
         
@@ -327,7 +354,6 @@ class CompanyMatch(JobTitleMatch):
         print(f'User companies: {self.companies_clean}')
         print(f'Relevant companies: {self.targets_clean}')
         print(f'Exclusion companies: {self.exclude_clean}')
-
 
 class handler(BaseHTTPRequestHandler):
 

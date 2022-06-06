@@ -399,6 +399,7 @@ class handler(BaseHTTPRequestHandler):
 
         test = JobTitleMatch(
             jobtitles=data["jobtitles"],
+            kw=data["kw"],
             exclude_kw=data["exclude_kw"],
             sen=data["sen"],
             exclude_sen=data["exclude_sen"],

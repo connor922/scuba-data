@@ -57,12 +57,14 @@ export default function LineStepper({ onClose }: StepperProps) {
                 </Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                     <Box sx={{ flex: '1 1 auto' }} />
-                    <Button onClick={() => {
-                        const campaignData = data.find((cam: any) => {
-                            return cam.id === campaigns[0]
-                        })
-                        onClose(state, campaignData)
-                    }}>
+                    <Button
+                        onClick={() => {
+                            const campaignData = data.find((cam: any) => {
+                                return cam.id === campaigns[0]
+                            })
+                            onClose(state, campaignData)
+                        }}
+                    >
                         Calculate
                     </Button>
                 </Box>
@@ -135,7 +137,12 @@ export default function LineStepper({ onClose }: StepperProps) {
                             </Button>
                         )}
                         <Box sx={{ flex: '1 1 auto' }} />
-                        <Button onClick={handleNext} disabled={state.length === 0}>Next</Button>
+                        <Button
+                            onClick={handleNext}
+                            disabled={state.length === 0}
+                        >
+                            Next
+                        </Button>
                     </Box>
                 </Box>
             </Box>
@@ -168,7 +175,12 @@ export default function LineStepper({ onClose }: StepperProps) {
                             Back
                         </Button>
                         <Box sx={{ flex: '1 1 auto' }} />
-                        <Button onClick={handleNext} disabled={campaigns.length == 0}>Next</Button>
+                        <Button
+                            onClick={handleNext}
+                            disabled={campaigns.length == 0}
+                        >
+                            Next
+                        </Button>
                     </Box>
                 </Box>
             </>
@@ -176,11 +188,15 @@ export default function LineStepper({ onClose }: StepperProps) {
     }
 
     return (
-        <Box sx={{
-            width: '100%', height: "30vh", display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between"
-        }}>
+        <Box
+            sx={{
+                width: '100%',
+                height: '30vh',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+            }}
+        >
             <Stepper activeStep={activeStep}>
                 {steps.map((label) => {
                     const stepProps: { completed?: boolean } = {}

@@ -11,38 +11,43 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import * as React from 'react'
 import { supabase } from '../libs/initSupabase'
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert, { AlertProps } from '@mui/material/Alert'
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     props,
-    ref,
+    ref
 ) {
-    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+})
 
 const theme = createTheme()
 
 export default function SignUp() {
-    const [open, setOpen] = React.useState(false);
-    const [errorOpen, setErrorOpen] = React.useState("");
+    const [open, setOpen] = React.useState(false)
+    const [errorOpen, setErrorOpen] = React.useState('')
 
-
-    const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    const handleClose = (
+        event?: React.SyntheticEvent | Event,
+        reason?: string
+    ) => {
         if (reason === 'clickaway') {
-            return;
+            return
         }
 
-        setOpen(false);
-    };
+        setOpen(false)
+    }
 
-    const handleErrorClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    const handleErrorClose = (
+        event?: React.SyntheticEvent | Event,
+        reason?: string
+    ) => {
         if (reason === 'clickaway') {
-            return;
+            return
         }
 
-        setErrorOpen("");
-    };
+        setErrorOpen('')
+    }
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -60,7 +65,7 @@ export default function SignUp() {
             setErrorOpen(error.message)
             console.log(error)
         } else {
-            setErrorOpen("")
+            setErrorOpen('')
             setOpen(true)
             console.log(user)
         }
@@ -130,14 +135,31 @@ export default function SignUp() {
                         </Grid>
                     </Box>
                 </Box>
-                <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-                    <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+                <Snackbar
+                    open={open}
+                    autoHideDuration={6000}
+                    onClose={handleClose}
+                >
+                    <Alert
+                        onClose={handleClose}
+                        severity="success"
+                        sx={{ width: '100%' }}
+                    >
                         Check emails
                     </Alert>
                 </Snackbar>
-                <Snackbar open={errorOpen.length > 0} autoHideDuration={20000} onClose={handleErrorClose}>
-                    <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
-                        {errorOpen}                    </Alert>
+                <Snackbar
+                    open={errorOpen.length > 0}
+                    autoHideDuration={20000}
+                    onClose={handleErrorClose}
+                >
+                    <Alert
+                        onClose={handleErrorClose}
+                        severity="error"
+                        sx={{ width: '100%' }}
+                    >
+                        {errorOpen}{' '}
+                    </Alert>
                 </Snackbar>
             </Container>
         </ThemeProvider>

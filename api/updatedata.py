@@ -24,19 +24,19 @@ class JobTitleMatch:
 
         # same as above but without punctuation, lowercase, and with english characters
         self.jobtitles_clean = [
-            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in jobtitles]
+            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower().strip() for j in jobtitles]
         self.kw_clean = [
-            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in kw]
+            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower().strip() for j in kw]
         self.exclude_kw_clean = [
-            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in exclude_kw]
+            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower().strip() for j in exclude_kw]
         self.sen_clean = [
-            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in sen]
+            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower().strip() for j in sen]
         self.exclude_sen_clean = [
-            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in exclude_sen]
+            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower().strip() for j in exclude_sen]
         self.jt_clean = [
-            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in jt]
+            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower().strip() for j in jt]
         self.exclude_jt_clean = [
-            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower() for j in exclude_jt]
+            unidecode(re.sub(r'[\W_]+ |(/)', " ", j)).lower().strip() for j in exclude_jt]
 
     def remove_filler_words_from_jts(self):
 
@@ -136,67 +136,103 @@ class JobTitleMatch:
     def check_percentage_match(self):
 
         report = {}
+        report_counts = {'High': 0, 'Medium': 0, 'Low': 0}
 
         #exclude = self.exclude_kw_clean + self.exclude_sen_clean + self.exclude_jt_clean
         exclude = self.exclude_kw_clean + self.exclude_sen_clean
 
         for index, jt in enumerate(self.jobtitles_clean):
 
-            check = False
             high_perc = 0.00
 
-            # Exact titles first:
-            for i in self.jt_clean:
-                vector1 = self.text_to_vector(jt)
-                vector2 = self.text_to_vector(i)
-                cosine = round(self.get_cosine(vector1, vector2), 2)
+            if self.sen_clean != [] or self.kw_clean != []:
+                if self.sen_clean == [] and self.kw_clean != []:
+                    for i in self.kw_clean:
+                        if re.search(rf'\b{i}\b', jt):
+                            high_perc = 0.99
+                            break
+                else:
+                    # Then check for matching with seniorities and keywords paired:
+                    for i in self.sen_clean:
+                        if re.search(rf'\b{i}\b', jt):
+                            if i == 'director' and 'associate director' not in self.sen_clean and ('assoc' in jt or 'associate' in jt):
+                                continue
+                            if self.sen_clean != [] and self.kw_clean == []:
+                                high_perc = 0.99
+                                break
+                            for j in self.kw_clean:
+                                if re.search(rf'\b{j}\b', jt):
+                                    keywords = []
+                                    for k in self.kw_clean:
 
-                if cosine == 1.00:
-                    high_perc = cosine
-                    check = True
-                    break
+                                        try:
+                                            if re.search(rf'\b{i} {j}\b', jt).start() == 0:
+                                                high_perc = 0.99
+                                        except:
+                                            try:
+                                                if re.search(rf'\b{j} {i}\b', jt).start() == 0:
+                                                    high_perc = 0.99
+                                            except:
+                                                if k == j:
+                                                    vector1 = self.text_to_vector(
+                                                        jt)
+                                                    vector2 = self.text_to_vector(
+                                                        f'{i} {j}')
+                                                    cosine = round(
+                                                        self.get_cosine(vector1, vector2), 2)
+                                                else:
+                                                    keywords.append(k)
+                                                    vector1 = self.text_to_vector(
+                                                        jt)
+                                                    vector2 = self.text_to_vector(
+                                                        f'{i} {j} {" ".join(keywords)}')
+                                                    cosine = round(
+                                                        self.get_cosine(vector1, vector2), 2)
 
-                if cosine > high_perc:
-                    high_perc = cosine
+                                                if cosine == 1.00:
+                                                    high_perc = cosine
+                                                    break
 
-            if high_perc <= 0.50:
-                high_perc = 0.00
+                                                if cosine > high_perc:
+                                                    high_perc = cosine
 
-            # Then check for matching with seniorities and keywords paired:
-            for i in self.sen_clean:
-                if re.search(rf'\b{i}\b', jt):
-                    if i == 'director' and 'associate director' not in self.sen_clean and ('assoc' in jt or 'associate' in jt):
-                        continue
-                    for j in self.kw_clean:
-                        if re.search(rf'\b{j}\b', jt):
-                            keywords = []
-                            for k in self.kw_clean:
-                                if k == j:
-                                    vector1 = self.text_to_vector(jt)
-                                    vector2 = self.text_to_vector(f'{i} {j}')
-                                    cosine = round(
-                                        self.get_cosine(vector1, vector2), 2)
-                                else:
-                                    keywords.append(k)
-                                    vector1 = self.text_to_vector(jt)
-                                    vector2 = self.text_to_vector(
-                                        f'{i} {j} {" ".join(keywords)}')
-                                    cosine = round(
-                                        self.get_cosine(vector1, vector2), 2)
+                            if high_perc == 1.00:
+                                break
 
-                                if cosine == 1.00:
-                                    high_perc = cosine
-                                    check = True
-                                    break
+            # Exact titles:
+            if self.jt_clean != []:
+                for i in self.jt_clean:
 
-                                if cosine > high_perc:
-                                    high_perc = cosine
+                    try:
+                        if re.search(rf'\b{i}\b', jt).start() == 0:
+                            high_perc = 0.99
+                    except:
+                        check_words = [
+                            'associate', 'assoc', 'global head', 'group head', 'general manager']
+                        check = False
 
-                    if check == True:
-                        break
+                        for j in check_words:
+                            if re.search(rf'\b{j}\b', jt) and re.search(rf'\b{j}\b', i):
+                                continue
+                            else:
+                                high_perc = 0.00
+                                check = True
+                                break
+
+                    if check == False:
+                        vector1 = self.text_to_vector(jt)
+                        vector2 = self.text_to_vector(i)
+                        cosine = round(self.get_cosine(vector1, vector2), 2)
+
+                        if cosine == 1.00:
+                            high_perc = cosine
+                            break
+
+                        if cosine > high_perc:
+                            high_perc = cosine
 
             # Exclusion checker - set to 2.00 if found:
-            if high_perc != 0:
+            if high_perc != 0.00 and exclude != [] and self.exclude_jt_clean != []:
                 for i in exclude:
                     if re.search(rf'\b{i}\b', jt):
                         high_perc = 2.00
@@ -214,18 +250,24 @@ class JobTitleMatch:
 
             if high_perc == 0.00:
                 report[self.jobtitles[index]] = 'No match'
+                report_counts['Low'] += 1
             elif high_perc == 2.00:
                 report[self.jobtitles[index]] = 'Exclude'
+                report_counts['Low'] += 1
             elif high_perc == 1.00:
                 report[self.jobtitles[index]] = 'Clean match'
+                report_counts['High'] += 1
             elif high_perc < 1.00 and high_perc >= 0.75:
                 report[self.jobtitles[index]] = 'Strong match'
+                report_counts['High'] += 1
             elif high_perc < 0.75 and high_perc >= 0.60:
                 report[self.jobtitles[index]] = 'Medium match'
+                report_counts['Medium'] += 1
             else:
                 report[self.jobtitles[index]] = 'Weak match'
+                report_counts['Low'] += 1
 
-        return report
+        return report, report_counts
 
     def hello(self):
         print(f'User jobtitles: {self.jobtitles_clean}')
@@ -246,11 +288,11 @@ class CompanyMatch(JobTitleMatch):
 
         # same as above but without punctuation, lowercase, and with english characters
         self.companies_clean = [
-            unidecode(re.sub(r'[\W_]+ ', " ", j)).lower() for j in companies]
+            unidecode(re.sub(r'[\W_]+ ', " ", j)).lower().strip() for j in companies]
         self.targets_clean = [
-            unidecode(re.sub(r'[\W_]+ ', " ", j)).lower() for j in targets]
+            unidecode(re.sub(r'[\W_]+ ', " ", j)).lower().strip() for j in targets]
         self.exclude_clean = [
-            unidecode(re.sub(r'[\W_]+ ', " ", j)).lower() for j in exclude]
+            unidecode(re.sub(r'[\W_]+ ', " ", j)).lower().strip() for j in exclude]
 
     def remove_company_extensions(self):
 
@@ -276,6 +318,7 @@ class CompanyMatch(JobTitleMatch):
     def check_percentage_match(self):
 
         report = {}
+        report_counts = {'High': 0, 'Medium': 0, 'Low': 0}
 
         for index, comp in enumerate(self.companies_clean):
 
@@ -316,18 +359,24 @@ class CompanyMatch(JobTitleMatch):
 
             if high_perc == 0.00:
                 report[self.companies[index]] = 'No match'
+                report_counts['Low'] += 1
             elif high_perc == 2.00:
                 report[self.companies[index]] = 'Exclude'
+                report_counts['Low'] += 1
             elif high_perc == 1.00:
                 report[self.companies[index]] = 'Clean match'
+                report_counts['High'] += 1
             elif high_perc < 1.00 and high_perc >= 0.70:
                 report[self.companies[index]] = 'Strong match'
+                report_counts['High'] += 1
             elif high_perc < 0.70 and high_perc > 0.50:
                 report[self.companies[index]] = 'Medium match'
+                report_counts['Medium'] += 1
             else:
                 report[self.companies[index]] = 'Weak match'
+                report_counts['Low'] += 1
 
-        return report
+        return report, report_counts
 
     def hello(self):
 
@@ -363,15 +412,19 @@ class handler(BaseHTTPRequestHandler):
 
         a = test.check_percentage_match()
 
+        unique_jts = len(set(data["jobtitles"]))
+
         test2 = CompanyMatch(
-            companies=['Barclays a/b',
-                       'HSBC international banking', 'Citi banking'],
-            targets=['HSBC', 'Barclays'],
-            exclude=['Citi'])
+            companies=data["companies"],
+            targets=data["include_companies"],
+            exclude=data["exclude_companies"])
 
         test2.remove_company_extensions()
 
         b = test2.check_percentage_match()
 
-        self.wfile.write(json.dumps({"a": a, "b": b}).encode())
+        unique_comps = len(set(data["companies"]))
+
+        self.wfile.write(json.dumps({"jt_report": a[0], "jt_report_sum": a[1], "jt_ucounts": unique_jts,
+                         "comp_report": b[0], "comp_report_sum": b[1], "comp_ucounts": unique_comps}).encode())
         return

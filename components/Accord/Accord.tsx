@@ -71,9 +71,10 @@ interface ItemProps {
     items: item[]
     label: string
     updateData: (items: item[]) => void
+    includeUpload: boolean
 }
 
-function Item({ label, updateData, items }: ItemProps) {
+function Item({ label, updateData, items, includeUpload }: ItemProps) {
     const [senority, setSenority] = useState<string>('')
     const { CSVReader } = useCSVReader()
 
@@ -88,13 +89,10 @@ function Item({ label, updateData, items }: ItemProps) {
                 flexDirection: 'column',
             }}
         >
-            <Typography sx={{ fontWeight: 600, mt: '1rem' }}>
-                {label}
-            </Typography>
             <div style={{ display: 'flex' }}>
                 <TextField
+                    label={label}
                     id="standard-basic"
-                    placeholder="Position in company"
                     variant="standard"
                     value={senority}
                     onChange={(event) => {
@@ -128,37 +126,39 @@ function Item({ label, updateData, items }: ItemProps) {
                 >
                     Add
                 </Button>
-                <CSVReader
-                    onUploadAccepted={(results: { data: string[][] }) => {
-                        const newData = results.data.slice(1)
-                        const newItems = newData.reduce(
-                            (memo: item[], b: string[]) => {
-                                if (b.length == 2) {
-                                    memo.push({
-                                        name: b[0],
-                                        isIncluded: b[1] === 'TRUE',
-                                    })
-                                }
+                {includeUpload && (
+                    <CSVReader
+                        onUploadAccepted={(results: { data: string[][] }) => {
+                            const newData = results.data.slice(1)
+                            const newItems = newData.reduce(
+                                (memo: item[], b: string[]) => {
+                                    if (b.length == 2) {
+                                        memo.push({
+                                            name: b[0],
+                                            isIncluded: b[1] === 'TRUE',
+                                        })
+                                    }
 
-                                return memo
-                            },
-                            []
-                        )
+                                    return memo
+                                },
+                                []
+                            )
 
-                        updateData([...items, ...newItems])
-                    }}
-                >
-                    {({ getRootProps }: any) => (
-                        <Button
-                            variant="contained"
-                            component="span"
-                            {...getRootProps()}
-                        >
-                            <AddIcon />
-                            Upload
-                        </Button>
-                    )}
-                </CSVReader>
+                            updateData([...items, ...newItems])
+                        }}
+                    >
+                        {({ getRootProps }: any) => (
+                            <Button
+                                variant="contained"
+                                component="span"
+                                {...getRootProps()}
+                            >
+                                <AddIcon />
+                                Upload
+                            </Button>
+                        )}
+                    </CSVReader>
+                )}
             </div>
             <div
                 style={{
@@ -290,15 +290,17 @@ export default function Accord({
                             updateData({ ...item, jobTitles: data })
                         }}
                         items={item.jobTitles}
+                        includeUpload
                     />
                 </Box>
                 <Box sx={{ flex: '40%', maxwidth: '40%' }}>
                     <Item
-                        label="Companies List"
+                        label="Companies"
                         updateData={(data: item[]) => {
                             updateData({ ...item, companysList: data })
                         }}
                         items={item.companysList}
+                        includeUpload
                     />
                 </Box>
             </AccordionDetails>

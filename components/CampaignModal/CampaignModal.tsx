@@ -20,7 +20,7 @@ export default function CampaignModal({
 
     return (
         <Dialog open={isOpen} onClose={handleClose}>
-            <DialogTitle>Choose a Campaign name</DialogTitle>
+            <DialogTitle>Create a Campaign</DialogTitle>
             <DialogContent>
                 <TextField
                     autoFocus

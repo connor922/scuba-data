@@ -11,7 +11,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import { useSWRConfig } from 'swr'
 import { supabase } from '../libs/initSupabase'
 import useSWR from 'swr'
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 
 interface item {
     name: string
@@ -146,7 +146,7 @@ function Settings() {
                             justifyContent: 'space-between',
                         }}
                     >
-                        <Button variant="outlined" onClick={handleClickOpen}>
+                        <Button variant="contained" onClick={handleClickOpen}>
                             Create
                         </Button>
                         <Link href="/archieved-campaigns">
@@ -166,69 +166,78 @@ function Settings() {
                         }}
                     >
                         {!isLoading ? (
-                            state.length > 0 ? state.map((item: campaign) => {
-                                return (
-                                    <Accord
-                                        key={item.id}
-                                        updateData={async (updatedsetting) => {
-                                            const newData = state.map(
-                                                (post: campaign) => {
-                                                    if (post.id === item.id) {
-                                                        return updatedsetting
+                            state.length > 0 ? (
+                                state.map((item: campaign) => {
+                                    return (
+                                        <Accord
+                                            key={item.id}
+                                            updateData={async (
+                                                updatedsetting
+                                            ) => {
+                                                const newData = state.map(
+                                                    (post: campaign) => {
+                                                        if (
+                                                            post.id === item.id
+                                                        ) {
+                                                            return updatedsetting
+                                                        }
+                                                        return post
                                                     }
-                                                    return post
-                                                }
-                                            )
-                                            mutate(
-                                                `/api/settings/${profile?.id}`,
-                                                updateData(updatedsetting),
-                                                {
-                                                    optimisticData: [
-                                                        ...newData,
-                                                    ],
-                                                    rollbackOnError: true,
-                                                }
-                                            )
-                                        }}
-                                        item={item}
-                                        isExpanded={
-                                            expanded == item.id?.toString()
-                                        }
-                                        handleChange={() =>
-                                            handleChange(item.id)
-                                        }
-                                        sendToArchive={async () => {
-                                            const newData = data.filter(
-                                                (post: campaign) =>
-                                                    post.id !== item.id
-                                            )
-                                            mutate(
-                                                `/api/settings/${profile?.id}`,
-                                                archieveSetting(item.id),
-                                                {
-                                                    optimisticData: [
-                                                        ...newData,
-                                                    ],
-                                                    rollbackOnError: true,
-                                                }
-                                            )
-                                        }}
-                                    />
-                                )
-                            }) :
+                                                )
+                                                mutate(
+                                                    `/api/settings/${profile?.id}`,
+                                                    updateData(updatedsetting),
+                                                    {
+                                                        optimisticData: [
+                                                            ...newData,
+                                                        ],
+                                                        rollbackOnError: true,
+                                                    }
+                                                )
+                                            }}
+                                            item={item}
+                                            isExpanded={
+                                                expanded == item.id?.toString()
+                                            }
+                                            handleChange={() =>
+                                                handleChange(item.id)
+                                            }
+                                            sendToArchive={async () => {
+                                                const newData = data.filter(
+                                                    (post: campaign) =>
+                                                        post.id !== item.id
+                                                )
+                                                mutate(
+                                                    `/api/settings/${profile?.id}`,
+                                                    archieveSetting(item.id),
+                                                    {
+                                                        optimisticData: [
+                                                            ...newData,
+                                                        ],
+                                                        rollbackOnError: true,
+                                                    }
+                                                )
+                                            }}
+                                        />
+                                    )
+                                })
+                            ) : (
                                 <Box
                                     sx={{
                                         display: 'flex',
                                         width: '100%',
                                         justifyContent: 'center',
-                                        margin: "auto"
+                                        margin: 'auto',
                                     }}
                                 >
-                                    <AddCircleOutlineIcon sx={{
-                                        color: "#1976d2"
-                                    }} />      Please upload some results
+                                    <AddCircleOutlineIcon
+                                        sx={{
+                                            color: '#1976d2',
+                                        }}
+                                    />{' '}
+                                    Please upload some results
                                 </Box>
-
+                            )
                         ) : (
                             <Box
                                 sx={{

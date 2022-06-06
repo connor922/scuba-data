@@ -3,6 +3,9 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
 import CssBaseline from '@mui/material/CssBaseline'
 import Paper from '@mui/material/Paper'
 import Toolbar from '@mui/material/Toolbar'
@@ -15,7 +18,7 @@ import Wrapper from '../components/Wrapper/Wrapper'
 import CircularProgress from '@mui/material/CircularProgress'
 import useSWR, { useSWRConfig } from 'swr'
 import { supabase } from '../libs/initSupabase'
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 
 const baseURL = process.env.NEXT_PUBLIC_FUNCTIONS_BASE_URL
 
@@ -33,15 +36,20 @@ const fetcher = async (url: string) => {
 }
 
 interface formPost {
+    id?: number
     user?: string
     name: string
-    error_count: number
     row_count: number
     file: string
-    campaigns: string[],
-    high: number,
-    medium: number,
-    low: number
+    campaigns: string[]
+    comp_high: number
+    comp_medium: number
+    comp_low: number
+    job_title_high: number
+    job_title_medium: number
+    job_title_low: number
+    job_title_unique_count: number
+    comp_unique_count: number
 }
 
 const updateFn = async (newData: formPost) => {
@@ -57,6 +65,7 @@ const updateFn = async (newData: formPost) => {
 
 function DashboardContent() {
     const [isOpen, setIsOpen] = useState(false)
+    const [expanded, setExpanded] = useState('')
     const [cards, setCards] = useState([])
     const { jsonToCSV } = usePapaParse()
     const { mutate } = useSWRConfig()
@@ -69,6 +78,12 @@ function DashboardContent() {
     }
     const handleClose = () => {
         setIsOpen(false)
+    }
+
+    const handleChange = (event: string) => {
+        setExpanded((prevstate: string) => {
+            return event == prevstate ? '' : event
+        })
     }
 
     useEffect(() => {
@@ -112,24 +127,49 @@ function DashboardContent() {
                             newData: string[][],
                             campaigns: any
                         ) => {
-                            const jobtitles = newData.reduce((memo, val) => {
-                                memo.push(val[0])
-                                return memo;
-                            }, [])
+                            const processedfile = newData.reduce<any>(
+                                (memo, val: any) => {
+                                    if (val[0]) {
+                                        memo.jobTitles.push(val[0])
+                                    }
 
+                                    if (val[1]) {
+                                        memo.compainies.push(val[1])
+                                    }
+                                    return memo
+                                },
+                                { jobTitles: [], compainies: [] }
+                            )
 
-
-                            //const jobtitles = ['head of it', 'Director of Finance', 'Director of IT Human Resources', 'Associate Director of IT & Cloud', 'Global Head of IT and government services and something like this'];
-                            const kw = campaigns.keywords.filter((a: any) => a.isIncluded).map((a: any) => a.name);
-                            const exclude_kw = campaigns.keywords.filter((a: any) => !a.isIncluded).map((a: any) => a.name);
-                            const sen = campaigns.seniorites.filter((a: any) => a.isIncluded).map((a: any) => a.name);
-                            const exclude_sen: string[] = campaigns.seniorites.filter((a: any) => a.isIncluded).map((a: any) => a.name);
-                            const jt: string[] = campaigns.jobTitles.filter((a: any) => a.isIncluded).map((a: any) => a.name);
-                            const exclude_jt: string[] = campaigns.jobTitles.filter((a: any) => a.isIncluded).map((a: any) => a.name);
+                            const kw = campaigns.keywords
+                                .filter((a: any) => a.isIncluded)
+                                .map((a: any) => a.name)
+                            const exclude_kw = campaigns.keywords
+                                .filter((a: any) => !a.isIncluded)
+                                .map((a: any) => a.name)
+                            const sen = campaigns.seniorites
+                                .filter((a: any) => a.isIncluded)
+                                .map((a: any) => a.name)
+                            const exclude_sen: string[] = campaigns.seniorites
+                                .filter((a: any) => !a.isIncluded)
+                                .map((a: any) => a.name)
+                            const jt: string[] = campaigns.jobTitles
+                                .filter((a: any) => a.isIncluded)
+                                .map((a: any) => a.name)
+                            const exclude_jt: string[] = campaigns.jobTitles
+                                .filter((a: any) => !a.isIncluded)
+                                .map((a: any) => a.name)
+                            const compainies: string[] = campaigns.companysList
+                                .filter((a: any) => a.isIncluded)
+                                .map((a: any) => a.name)
+                            const exclude_compaines: string[] =
+                                campaigns.companysList
+                                    .filter((a: any) => !a.isIncluded)
+                                    .map((a: any) => a.name)
 
                             const fomattedData = await fetch(
                                 (baseURL ? baseURL + '/' : '') +
-                                'api/updatedata',
+                                    'api/updatedata',
                                 {
                                     method: 'POST',
                                     headers: new Headers({
@@ -137,67 +177,98 @@ function DashboardContent() {
                                         Accept: 'application/json',
                                     }),
                                     body: JSON.stringify({
-                                        jobtitles: jobtitles,
+                                        jobtitles: processedfile.jobTitles,
+                                        companies: processedfile.compainies,
                                         kw: kw,
                                         exclude_kw: exclude_kw,
                                         sen: sen,
                                         exclude_sen: exclude_sen,
                                         jt: jt,
-                                        exclude_jt: exclude_jt
-                                    }
-                                    ),
+                                        exclude_jt: exclude_jt,
+                                        include_companies: compainies,
+                                        exclude_companies: exclude_compaines,
+                                    }),
                                 }
                             )
                             const score = await fomattedData.json()
 
-                            const jobs: any = score.a;
-                            const conan = Object.values(jobs)
-                            const finalResults: any = conan.reduce((memo: any, job: any) => {
-
-                                if (job == "No match" || job == 'Exclude') {
-                                    memo.high = memo.high + 1;
-                                } else if (job == "Clean match" || job == 'Strong match') {
-                                    memo.medium = memo.medium + 1;
-
-                                } else {
-                                    memo.low = memo.low + 1;
-                                }
-                                return memo;
-                            }, { high: 0, medium: 0, low: 0 })
-
-
                             console.log(score)
+
+                            const {
+                                comp_report,
+                                comp_report_sum,
+                                comp_ucounts,
+                                jt_report,
+                                jt_report_sum,
+                                jt_ucounts,
+                            } = score
+                            console.log(comp_report)
+                            console.log(jt_report)
+
                             handleClose()
 
+                            const jt_report_file = Object.entries(
+                                jt_report
+                            ).map((item: any) => {
+                                const b: obje = {}
 
+                                item.forEach(
+                                    (element: string, index: number) => {
+                                        b[`Column ${index + 1}`] = element
+                                    }
+                                )
+
+                                return b
+                            })
+
+                            const comp_report_file = Object.entries(
+                                comp_report
+                            ).map((item: any) => {
+                                const b: obje = {}
+
+                                item.forEach(
+                                    (element: string, index: number) => {
+                                        b[`Column ${index + 1}`] = element
+                                    }
+                                )
+
+                                return b
+                            })
 
                             const newTodo = {
-                                high: Math.round(finalResults.high / conan.length) * 100,
-                                medium: Math.round(finalResults.medium / conan.length) * 100,
-                                low: Math.round(finalResults.low / conan.length) * 100,
+                                comp_high: comp_report_sum.High,
+                                comp_medium: comp_report_sum.Medium,
+                                comp_low: comp_report_sum.Low,
+                                job_title_high: jt_report_sum.High,
+                                job_title_medium: jt_report_sum.Medium,
+                                job_title_low: jt_report_sum.Low,
                                 user: profile?.id,
                                 name: newData[0][0],
-                                error_count: 0,
-                                row_count: newData.length,
-                                file: jsonToCSV(
-                                    newData.map((array: string[]) => {
-                                        const b: obje = {}
-
-                                        array.forEach(
-                                            (
-                                                element: string,
-                                                index: number
-                                            ) => {
-                                                b[`column ${index}`] = element
-                                                    .split('')
-                                                    .reverse()
-                                                    .join('')
-                                            }
-                                        )
-
-                                        return b
-                                    })
-                                ),
+                                job_title_unique_count: jt_ucounts,
+                                comp_unique_count: comp_ucounts,
+                                row_count:
+                                    processedfile.compainies.length +
+                                    processedfile.jobTitles.length,
+                                file: jsonToCSV([
+                                    {
+                                        'Column 1': 'Job Report',
+                                        'Column 2': '',
+                                    },
+                                    ...jt_report_file,
+                                    {
+                                        'Column 1': '',
+                                        'Column 2': '',
+                                    },
+                                    {
+                                        'Column 1': '',
+                                        'Column 2': '',
+                                    },
+                                    {
+                                        'Column 1': 'Company Report',
+                                        'Column 2': '',
+                                    },
+                                    ...comp_report_file,
+                                ]),
                                 campaigns: [campaigns.id.toString()],
                             }
 
@@ -224,133 +295,234 @@ function DashboardContent() {
                                 minHeight: '60vh',
                             }}
                         >
-                            {cards.length > 0 ? cards.map((cards: formPost, index: number) => {
-                                const { error_count, name, row_count, file, high, medium, low } =
-                                    cards
-                                return (
-                                    <Card key={index} sx={{ mb: '2rem' }}>
-                                        <CardContent
-                                            sx={{
-                                                display: 'flex',
-                                                gap: '1rem',
-                                                justifyContent: 'space-between',
-                                            }}
-                                        >
-                                            <Typography
-                                                variant={'h6'}
-                                                sx={{
-                                                    flex: '1 1 0px',
-                                                    fontWeight: 'bold',
-                                                    lineHeight: 2,
-                                                }}
-                                            >
-                                                {name}
-                                            </Typography>
-                                            <Typography
-                                                variant={'h6'}
-                                                sx={{
-                                                    flex: '1 1 0px',
-                                                    lineHeight: 2,
-                                                }}
-                                            >
-                                                {row_count}
-                                            </Typography>
-                                            <Typography
-                                                variant={'h6'}
-                                                sx={{
-                                                    flex: '1 1 0px',
-                                                    color: 'darkRed',
-                                                    lineHeight: 2,
-                                                }}
-                                            >
-                                                {error_count}
-                                            </Typography>
-                                            <div
-                                                style={{
-                                                    display: 'flex',
-                                                    gap: '5px',
-                                                    flex: '1 1 0px',
-                                                }}
-                                            >
-                                                <Avatar
-                                                    sx={{
-                                                        bgcolor: 'green',
-                                                        fontSize: '0.95rem',
-                                                        paddingLeft: '5px',
-                                                        paddingTop: '2px',
-                                                    }}
-                                                >
-                                                    {high}%
-                                                </Avatar>
-                                                <Avatar
-                                                    sx={{
-                                                        bgcolor: 'orange',
-                                                        fontSize: '0.95rem',
-                                                        paddingLeft: '5px',
-                                                        paddingTop: '2px',
-                                                    }}
-                                                >
-                                                    {medium}%
-                                                </Avatar>
-                                                <Avatar
-                                                    sx={{
-                                                        bgcolor: 'crimson',
-                                                        fontSize: '0.95rem',
-                                                        paddingLeft: '5px',
-                                                        paddingTop: '2px',
-                                                    }}
-                                                >
-                                                    {low}%
-                                                </Avatar>
-                                            </div>
-                                            <Button
-                                                variant="outlined"
-                                                sx={{
-                                                    color: 'blue',
-                                                    flex: '1 1 0px',
-                                                }}
-                                                onClick={() => {
-                                                    var csvData = new Blob(
-                                                        [file],
-                                                        {
-                                                            type: 'text/csv;charset=utf-8;',
-                                                        }
-                                                    )
-                                                    var csvURL =
-                                                        window.URL.createObjectURL(
-                                                            csvData
-                                                        )
+                            {cards.length > 0 ? (
+                                cards.map((cards: formPost, index: number) => {
+                                    const {
+                                        name,
+                                        row_count,
+                                        id,
+                                        file,
+                                        campaigns,
+                                        comp_high,
+                                        comp_medium,
+                                        comp_low,
+                                        job_title_high,
+                                        job_title_medium,
+                                        job_title_low,
+                                        job_title_unique_count,
+                                        comp_unique_count,
+                                    } = cards
 
-                                                    var tempLink =
-                                                        document.createElement(
-                                                            'a'
+                                    return (
+                                        <Accordion
+                                            sx={{ pt: 1 }}
+                                            key={index}
+                                            expanded={
+                                                expanded == index?.toString()
+                                            }
+                                            onChange={() =>
+                                                handleChange(index.toString())
+                                            }
+                                        >
+                                            <AccordionSummary
+                                                aria-controls="panel1bh-content"
+                                                id="panel1bh-header"
+                                            >
+                                                <Typography
+                                                    sx={{
+                                                        fontWeight: 700,
+                                                        width: '33%',
+                                                        flexShrink: 0,
+                                                        fontSize: '125%',
+                                                        margin: 'auto',
+                                                        marginLeft: '1rem',
+                                                    }}
+                                                >
+                                                    Name: {name}
+                                                </Typography>
+                                                <Typography
+                                                    sx={{
+                                                        fontWeight: 700,
+                                                        width: '33%',
+                                                        flexShrink: 0,
+                                                        fontSize: '125%',
+                                                        margin: 'auto',
+                                                        marginLeft: '1rem',
+                                                    }}
+                                                >
+                                                    rows: {row_count}
+                                                </Typography>
+                                                <Button
+                                                    variant="outlined"
+                                                    sx={{
+                                                        color: 'blue',
+                                                        flex: '1 1 0px',
+                                                    }}
+                                                    onClick={() => {
+                                                        var csvData = new Blob(
+                                                            [file],
+                                                            {
+                                                                type: 'text/csv;charset=utf-8;',
+                                                            }
                                                         )
-                                                    tempLink.href = csvURL
-                                                    tempLink.setAttribute(
-                                                        'download',
-                                                        'download.csv'
-                                                    )
-                                                    tempLink.click()
+                                                        var csvURL =
+                                                            window.URL.createObjectURL(
+                                                                csvData
+                                                            )
+
+                                                        var tempLink =
+                                                            document.createElement(
+                                                                'a'
+                                                            )
+                                                        tempLink.href = csvURL
+                                                        tempLink.setAttribute(
+                                                            'download',
+                                                            'download.csv'
+                                                        )
+                                                        tempLink.click()
+                                                    }}
+                                                >
+                                                    Export
+                                                </Button>
+                                            </AccordionSummary>
+                                            <AccordionDetails
+                                                sx={{
+                                                    display: 'flex',
+                                                    flexDirection: 'row',
+                                                    borderTop:
+                                                        'lightgray solid 1px',
                                                 }}
                                             >
-                                                Export
-                                            </Button>
-                                        </CardContent>
-                                    </Card>
-                                )
-                            }) : <Box
-                                sx={{
-                                    display: 'flex',
-                                    width: '100%',
-                                    justifyContent: 'center',
-                                    margin: "auto"
-                                }}
-                            >
-                                <AddCircleOutlineIcon sx={{
-                                    color: "#1976d2"
-                                }} />      Please upload some results
-                            </Box>
-                            }
+                                                <Box
+                                                    sx={{
+                                                        flex: '50%',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        color: 'grey',
+                                                    }}
+                                                >
+                                                    <Typography
+                                                        sx={{
+                                                            fontWeight: 700,
+                                                            flexShrink: 0,
+                                                            fontSize: '125%',
+                                                            margin: 'auto',
+                                                            marginLeft: '1rem',
+                                                            color: 'black',
+                                                        }}
+                                                    >
+                                                        Companies
+                                                    </Typography>
+                                                    <Typography
+                                                        sx={{
+                                                            flexShrink: 0,
+                                                            margin: 'auto',
+                                                            marginLeft: '1rem',
+                                                        }}
+                                                    >
+                                                        High:{comp_high}
+                                                    </Typography>
+                                                    <Typography
+                                                        sx={{
+                                                            flexShrink: 0,
+                                                            margin: 'auto',
+                                                            marginLeft: '1rem',
+                                                        }}
+                                                    >
+                                                        Medium:{comp_medium}
+                                                    </Typography>
+                                                    <Typography
+                                                        sx={{
+                                                            flexShrink: 0,
+                                                            margin: 'auto',
+                                                            marginLeft: '1rem',
+                                                        }}
+                                                    >
+                                                        Low:{comp_low}
+                                                    </Typography>
+                                                    <Typography
+                                                        sx={{
+                                                            flexShrink: 0,
+                                                            margin: 'auto',
+                                                            marginLeft: '1rem',
+                                                        }}
+                                                    >
+                                                        Unique:
+                                                        {comp_unique_count}
+                                                    </Typography>
+                                                </Box>
+                                                <Box sx={{ flex: '50%' }}>
+                                                    <Typography
+                                                        sx={{
+                                                            fontWeight: 700,
+                                                            flexShrink: 0,
+                                                            fontSize: '125%',
+                                                            margin: 'auto',
+                                                            marginLeft: '1rem',
+                                                        }}
+                                                    >
+                                                        Job titles
+                                                    </Typography>
+                                                    <Typography
+                                                        sx={{
+                                                            flexShrink: 0,
+                                                            margin: 'auto',
+                                                            marginLeft: '1rem',
+                                                        }}
+                                                    >
+                                                        High:{job_title_high}
+                                                    </Typography>
+                                                    <Typography
+                                                        sx={{
+                                                            flexShrink: 0,
+                                                            margin: 'auto',
+                                                            marginLeft: '1rem',
+                                                        }}
+                                                    >
+                                                        Medium:
+                                                        {job_title_medium}
+                                                    </Typography>
+                                                    <Typography
+                                                        sx={{
+                                                            flexShrink: 0,
+                                                            margin: 'auto',
+                                                            marginLeft: '1rem',
+                                                        }}
+                                                    >
+                                                        Low:{job_title_low}
+                                                    </Typography>
+                                                    <Typography
+                                                        sx={{
+                                                            flexShrink: 0,
+                                                            margin: 'auto',
+                                                            marginLeft: '1rem',
+                                                        }}
+                                                    >
+                                                        Unique:
+                                                        {job_title_unique_count}
+                                                    </Typography>
+                                                </Box>
+                                            </AccordionDetails>
+                                        </Accordion>
+                                    )
+                                })
+                            ) : (
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        width: '100%',
+                                        justifyContent: 'center',
+                                        margin: 'auto',
+                                    }}
+                                >
+                                    <AddCircleOutlineIcon
+                                        sx={{
+                                            color: '#1976d2',
+                                        }}
+                                    />{' '}
+                                    Please upload some results
+                                </Box>
+                            )}
                         </Paper>
                     ) : (
                         <Box

@@ -71,10 +71,10 @@ interface ItemProps {
     items: item[]
     label: string
     updateData: (items: item[]) => void
-    includeUpload: boolean
+    includeUpload?: boolean
 }
 
-function Item({ label, updateData, items, includeUpload }: ItemProps) {
+function Item({ label, updateData, items, includeUpload = false }: ItemProps) {
     const [senority, setSenority] = useState<string>('')
     const { CSVReader } = useCSVReader()
 
@@ -276,6 +276,7 @@ export default function Accord({
                             updateData({ ...item, seniorites: data })
                         }}
                         items={item.seniorites}
+
                     />
                     <Item
                         label="Keywords"

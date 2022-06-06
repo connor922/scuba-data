@@ -173,28 +173,29 @@ class JobTitleMatch:
                                                 if re.search(rf'\b{j} {i}\b', jt).start() == 0:
                                                     high_perc = 0.99
                                             except:
-                                                if k == j:
-                                                    vector1 = self.text_to_vector(
-                                                        jt)
-                                                    vector2 = self.text_to_vector(
-                                                        f'{i} {j}')
-                                                    cosine = round(
-                                                        self.get_cosine(vector1, vector2), 2)
-                                                else:
-                                                    keywords.append(k)
-                                                    vector1 = self.text_to_vector(
-                                                        jt)
-                                                    vector2 = self.text_to_vector(
-                                                        f'{i} {j} {" ".join(keywords)}')
-                                                    cosine = round(
-                                                        self.get_cosine(vector1, vector2), 2)
+                                                pass
+                                        if k == j:
+                                            vector1 = self.text_to_vector(
+                                                jt)
+                                            vector2 = self.text_to_vector(
+                                                f'{i} {j}')
+                                            cosine = round(
+                                                self.get_cosine(vector1, vector2), 2)
+                                        else:
+                                            keywords.append(k)
+                                            vector1 = self.text_to_vector(
+                                                jt)
+                                            vector2 = self.text_to_vector(
+                                                f'{i} {j} {" ".join(keywords)}')
+                                            cosine = round(
+                                                self.get_cosine(vector1, vector2), 2)
 
-                                                if cosine == 1.00:
-                                                    high_perc = cosine
-                                                    break
+                                        if cosine == 1.00:
+                                            high_perc = cosine
+                                            break
 
-                                                if cosine > high_perc:
-                                                    high_perc = cosine
+                                        if cosine > high_perc:
+                                            high_perc = cosine
 
                             if high_perc == 1.00:
                                 break

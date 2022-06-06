@@ -1,1 +1,2 @@
 Unidecode==1.3.4
+simplejson==3.17.6 
